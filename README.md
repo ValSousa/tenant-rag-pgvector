@@ -562,3 +562,4 @@ controle de acesso
 
 O objetivo é garantir que um documento do Cliente B não seja retornado
 durante uma consulta autorizada somente para o Cliente A.
+
