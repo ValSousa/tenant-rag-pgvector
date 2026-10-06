@@ -1,0 +1,7 @@
+cenario;documentType;aceito
+contrato;CONTRACT;true
+sinistro;CLAIM;true
+vistoria;INSPECTION;true
+valor fora da lista;POLICY;false
+minúsculo;contract;false
+vazio;<vazio>;false

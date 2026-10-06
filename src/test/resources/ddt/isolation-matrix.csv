@@ -1,0 +1,7 @@
+cenario;consultante;vetorChunkA;vetorChunkB;vetorPergunta;resultadosEsperados
+A pergunta e só B tem o vetor idêntico;A;vidros;franquia;franquia;A
+B pergunta e só A tem o vetor idêntico;B;franquia;vidros;franquia;B
+ambos têm o vetor idêntico, A pergunta;A;franquia;franquia;franquia;A
+ambos têm o vetor idêntico, B pergunta;B;franquia;franquia;franquia;B
+A sem chunks, B com o vetor idêntico;A;<null>;franquia;franquia;VAZIO
+B sem chunks, A com o vetor idêntico;B;franquia;<null>;franquia;VAZIO

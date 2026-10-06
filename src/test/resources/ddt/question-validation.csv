@@ -1,0 +1,7 @@
+cenario;question;esperado;campoComErro
+pergunta válida;Qual é o valor da franquia da apólice?;200;<null>
+pergunta com 2000 caracteres;<2000 a>;200;<null>
+pergunta com 2001 caracteres;<2001 a>;400;question
+pergunta vazia;<vazio>;400;question
+pergunta só com espaços;<espacos>;400;question
+pergunta ausente;<null>;400;question

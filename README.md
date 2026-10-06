@@ -50,7 +50,11 @@ pertencentes ao Cliente B.
 
 ### IA / RAG
 
--   Modelo de embeddings
+-   LangChain4j (versão Java do LangChain)
+-   OpenAI: `text-embedding-3-small` (embeddings, 768 dimensões) e
+    `gpt-4o-mini` (respostas)
+-   `PgVectorEmbeddingStore` do LangChain4j para gravar e buscar os
+    chunks no pgvector
 -   Busca por similaridade vetorial
 
 ### Banco de dados
@@ -100,14 +104,16 @@ rag-pgvector/
 │   │   │       │   └── ChunkRepository.java
 │   │   │       │
 │   │   │       ├── entity/
-│   │   │       │   ├── Client.java
-│   │   │       │   ├── Document.java
-│   │   │       │   └── DocumentChunk.java
+│   │   │       │   ├── ClientEntity.java
+│   │   │       │   └── DocumentEntity.java
+│   │   │       │
+│   │   │       ├── enums/
+│   │   │       │   └── DocumentTypeEnum.java
 │   │   │       │
 │   │   │       ├── dto/
-│   │   │       │   ├── DocumentResponse.java
-│   │   │       │   ├── SearchRequest.java
-│   │   │       │   └── SearchResponse.java
+│   │   │       │   ├── DocumentResponseDTO.java
+│   │   │       │   ├── SearchRequestDTO.java
+│   │   │       │   └── SearchResponseDTO.java
 │   │   │       │
 │   │   │       ├── exception/
 │   │   │       │   ├── ResourceNotFoundException.java
@@ -157,6 +163,16 @@ docker compose up -d
 
 ### Executar a aplicação
 
+A aplicação e o `docker compose` leem as configurações do arquivo `.env` na raiz do projeto (fora do git). Crie-o a partir do modelo e preencha `OPENAI_API_KEY` e `ADMIN_API_KEY`:
+
+``` bash
+cp .env.example .env                     # PowerShell: Copy-Item .env.example .env
+```
+
+Variáveis de ambiente do sistema também funcionam e têm prioridade sobre o `.env`.
+
+Detalhes em [docs/guias/Como executar.md](docs/guias/Como%20executar.md).
+
 ``` bash
 ./mvnw spring-boot:run
 ```
@@ -172,6 +188,9 @@ mvnw.cmd spring-boot:run
 ``` bash
 ./mvnw test
 ```
+
+Precisa do Docker no ar; não precisa de `OPENAI_API_KEY`. Detalhes em
+[docs/guias/Como testar.md](docs/guias/Como%20testar.md).
 
 ### Gerar o projeto
 
@@ -234,26 +253,41 @@ CLAIM
 INSPECTION
 ```
 
+No código, esses valores são representados pelo enum `DocumentTypeEnum`
+(pacote `enums`).
+
 ### DOCUMENT_CHUNK
 
-Representa cada trecho do documento e seu embedding.
+Representa cada trecho do documento e seu embedding. É a tabela usada
+pelo `PgVectorEmbeddingStore` do LangChain4j: as colunas `embedding_id`,
+`embedding` e `text` são exigidas pela biblioteca, e as demais guardam os
+metadados de cada chunk, uma coluna por chave (modo `COLUMN_PER_KEY`).
 
 ``` sql
 CREATE TABLE document_chunk (
-    id BIGSERIAL PRIMARY KEY,
+    embedding_id UUID PRIMARY KEY,
+    embedding VECTOR(768) NOT NULL,
+    text TEXT NOT NULL,
+    client_id BIGINT NOT NULL,
     document_id BIGINT NOT NULL,
     chunk_index INTEGER NOT NULL,
-    content TEXT NOT NULL,
-    embedding VECTOR(1536),
+    document_type VARCHAR(100) NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
 
-    CONSTRAINT fk_chunk_document
-        FOREIGN KEY (document_id)
-        REFERENCES document(id)
+    CONSTRAINT fk_chunk_document_client
+        FOREIGN KEY (document_id, client_id)
+        REFERENCES document(id, client_id)
 );
 ```
 
-> A dimensão `1536` é um exemplo. Ela deverá corresponder à dimensão
-> produzida pelo modelo de embeddings escolhido.
+> A dimensão `768` corresponde ao `text-embedding-3-small` da OpenAI
+> configurado com `dimensions = 768`. Trocar de modelo exige ajustar a
+> dimensão e reprocessar os documentos.
+>
+> O `client_id` fica também no chunk para o filtro por cliente ser feito
+> direto nesta tabela. A chave estrangeira composta garante que ele é
+> sempre igual ao `client_id` do documento. O DDL completo está em
+> `docs/arquitetura/04 Modelo de dados.md`.
 
 ------------------------------------------------------------------------
 
@@ -269,29 +303,44 @@ USING hnsw (embedding vector_cosine_ops);
 
 A busca deverá considerar também o cliente.
 
-Conceitualmente:
+Com LangChain4j, a busca usa um filtro de metadado:
+
+``` java
+Filter filtro = metadataKey("client_id").isEqualTo(clientId);
+
+EmbeddingSearchRequest request = EmbeddingSearchRequest.builder()
+        .queryEmbedding(embeddingDaPergunta)
+        .maxResults(5)
+        .filter(filtro)
+        .build();
+```
+
+Que o `PgVectorEmbeddingStore` transforma, conceitualmente, em:
 
 ``` sql
 SELECT
-    dc.id,
-    dc.content,
-    dc.embedding <=> :queryEmbedding AS distance
-FROM document_chunk dc
-JOIN document d
-    ON d.id = dc.document_id
-WHERE d.client_id = :clientId
-ORDER BY dc.embedding <=> :queryEmbedding
+    embedding_id,
+    text,
+    (2 - (embedding <=> :queryEmbedding)) / 2 AS score
+FROM document_chunk
+WHERE client_id = :clientId
+ORDER BY embedding <=> :queryEmbedding
 LIMIT 5;
 ```
 
 O `clientId` é fundamental para impedir que a busca recupere informações
-de outro cliente.
+de outro cliente. O filtro é sempre aplicado no SQL, nunca depois da
+busca.
 
 ------------------------------------------------------------------------
 
 ## 7. Classes principais
 
-### Client
+Convenção de nomes: entidades JPA terminam em `Entity` (`ClientEntity`)
+e DTOs terminam em `DTO` (`SearchRequestDTO`, `DocumentResponseDTO`).
+Enums ficam no pacote `enums` e terminam em `Enum` (`DocumentTypeEnum`).
+
+### ClientEntity
 
 Representa o cliente/tenant.
 
@@ -302,7 +351,7 @@ Responsabilidades:
 
 ------------------------------------------------------------------------
 
-### Document
+### DocumentEntity
 
 Representa o documento original.
 
@@ -315,16 +364,17 @@ Responsabilidades:
 
 ------------------------------------------------------------------------
 
-### DocumentChunk
+### Chunk (TextSegment do LangChain4j)
 
-Representa uma parte do documento.
+Representa uma parte do documento. Não é uma entidade JPA: cada chunk é
+um `TextSegment` do LangChain4j, gravado pelo `PgVectorEmbeddingStore`.
 
 Responsabilidades:
 
--   Conteúdo do chunk
--   Ordem do chunk
+-   Conteúdo do chunk (`text`)
+-   Ordem do chunk (`chunk_index`)
 -   Embedding
--   Documento de origem
+-   Documento e cliente de origem (`document_id`, `client_id`)
 
 ------------------------------------------------------------------------
 
@@ -418,8 +468,9 @@ Responsável pelas operações relacionadas aos documentos.
 
 ### ChunkRepository
 
-Responsável pela busca dos chunks e pela consulta de similaridade
-vetorial.
+Responsável por gravar os chunks e fazer a consulta de similaridade
+vetorial, usando o `PgVectorEmbeddingStore` do LangChain4j. Toda busca
+exige o `clientId` e aplica o filtro `client_id`.
 
 ------------------------------------------------------------------------
 
@@ -446,7 +497,7 @@ Client
   ↓
 Document
   ↓
-DocumentChunk
+Chunk (TextSegment)
   ↓
 Embedding
 ```
@@ -562,3 +613,21 @@ controle de acesso
 
 O objetivo é garantir que um documento do Cliente B não seja retornado
 durante uma consulta autorizada somente para o Cliente A.
+
+------------------------------------------------------------------------
+
+## 13. Documentação do projeto
+
+| Pasta | Conteúdo |
+|---|---|
+| [`docs/requirements/`](docs/requirements/) | Requisitos funcionais RF-001 a RF-012, cada um com a seção "Cenários de teste (QA)" |
+| [`docs/arquitetura/`](docs/arquitetura/README.md) | Arquitetura, componentes, modelo de dados, API e ADRs |
+| [`docs/QA/`](docs/QA/README.md) | Estratégia de testes, testes unitários e de integração, DDT e catálogo de cenários `CT-xxx` |
+| [`docs/backlog/`](docs/backlog/Backlog.md) | Backlog: funcionalidades, prioridades, entregas e tarefas `T-xxx` por etapa |
+| [`docs/guias/`](docs/guias/README.md) | Guias de execução, testes e uso da API |
+| [`docs/revisao/`](docs/revisao/) | Revisões de código por requisito |
+
+Ao implementar um requisito, use os três: o RF diz **o que** fazer, a
+arquitetura diz **como**, e os cenários de QA dizem **como provar** que
+está pronto.
+

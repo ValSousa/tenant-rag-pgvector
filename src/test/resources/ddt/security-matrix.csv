@@ -1,0 +1,41 @@
+cenario;chave;metodo;rota;esperado
+sem chave em busca;<null>;POST;/clients/1/search;401
+chave inválida em busca;CHAVE_INVALIDA;POST;/clients/1/search;401
+cliente A na própria busca;CHAVE_A;POST;/clients/1/search;PERMITIDO
+cliente A na busca de B;CHAVE_A;POST;/clients/2/search;403
+cliente A na busca de cliente inexistente;CHAVE_A;POST;/clients/999/search;403
+cliente B na busca de A;CHAVE_B;POST;/clients/1/search;403
+sem chave no upload;<null>;POST;/clients/1/documents;401
+chave inválida no upload;CHAVE_INVALIDA;POST;/clients/1/documents;401
+cliente A no próprio upload;CHAVE_A;POST;/clients/1/documents;PERMITIDO
+cliente A no upload de B;CHAVE_A;POST;/clients/2/documents;403
+cliente B no upload de A;CHAVE_B;POST;/clients/1/documents;403
+sem chave no ask;<null>;POST;/clients/1/ask;401
+chave inválida no ask;CHAVE_INVALIDA;POST;/clients/1/ask;401
+cliente A no próprio ask;CHAVE_A;POST;/clients/1/ask;PERMITIDO
+cliente A no ask de B;CHAVE_A;POST;/clients/2/ask;403
+cliente B no ask de A;CHAVE_B;POST;/clients/1/ask;403
+admin na busca de A;CHAVE_ADMIN;POST;/clients/1/search;403
+admin no upload de A;CHAVE_ADMIN;POST;/clients/1/documents;403
+admin no ask de A;CHAVE_ADMIN;POST;/clients/1/ask;403
+admin cria cliente;CHAVE_ADMIN;POST;/clients;PERMITIDO
+cliente A cria cliente;CHAVE_A;POST;/clients;403
+chave inválida cria cliente;CHAVE_INVALIDA;POST;/clients;401
+sem chave cria cliente;<null>;POST;/clients;401
+admin consulta cliente A;CHAVE_ADMIN;GET;/clients/1;PERMITIDO
+cliente A consulta a si mesmo;CHAVE_A;GET;/clients/1;PERMITIDO
+cliente A consulta B;CHAVE_A;GET;/clients/2;403
+cliente B consulta A;CHAVE_B;GET;/clients/1;403
+sem chave consulta cliente;<null>;GET;/clients/1;401
+cliente A altera a si mesmo (PUT);CHAVE_A;PUT;/clients/1;403
+cliente A apaga a si mesmo (DELETE);CHAVE_A;DELETE;/clients/1;403
+cliente A altera a si mesmo (PATCH);CHAVE_A;PATCH;/clients/1;403
+admin apaga cliente A (DELETE);CHAVE_ADMIN;DELETE;/clients/1;403
+sem chave apaga cliente (DELETE);<null>;DELETE;/clients/1;401
+clientId não numérico;CHAVE_A;POST;/clients/abc/search;403
+rota desconhecida com chave;CHAVE_A;GET;/actuator/env;403
+rota desconhecida com chave de admin;CHAVE_ADMIN;GET;/actuator/env;403
+rota desconhecida sem chave;<null>;GET;/actuator/env;401
+swagger ui sem chave;<null>;GET;/swagger-ui.html;PERMITIDO
+swagger ui index sem chave;<null>;GET;/swagger-ui/index.html;PERMITIDO
+api-docs sem chave;<null>;GET;/v3/api-docs;PERMITIDO

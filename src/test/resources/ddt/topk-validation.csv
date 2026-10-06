@@ -1,0 +1,8 @@
+cenario;topK;esperado;topKRepassado
+topK ausente na busca;<null>;200;5
+topK mínimo;1;200;1
+topK máximo;20;200;20
+topK zero;0;400;<null>
+topK negativo;-1;400;<null>
+topK acima do máximo;21;400;<null>
+topK não numérico;abc;400;<null>

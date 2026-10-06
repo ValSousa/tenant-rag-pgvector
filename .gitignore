@@ -34,3 +34,11 @@ build/
 
 ### Claude Code ###
 .claude/settings.local.json
+
+### Logs ###
+*.log
+
+### Configuração local (pode conter chaves; não versionar) ###
+.env
+!.env.example
+src/main/resources/application-dev.properties
