@@ -55,12 +55,15 @@ Classes de teste existentes hoje:
 | `ingestion/TextChunkerTest` | Unitário | Não |
 | `validator/DocumentFileValidatorTest` | Unitário (regras do arquivo do upload) | Não |
 | `support/FakeEmbeddingModelTest` | Unitário | Não |
+| `logging/RequestLoggingFilterTest` | Unitário (linha de log por requisição, trace ID, nível; log lido com `OutputCaptureExtension`) | Não |
+| `logging/LoggingConfigurationTest` | Unitário (nenhum `DEBUG`/`TRACE` de cabeçalhos, SQL com parâmetros ou da OpenAI nas propriedades) | Não |
 | `controller/ClientControllerTest` | Web (MockMvc, `WebSliceTest`) | Não |
 | `controller/DocumentControllerTest` | Web (MockMvc, `WebSliceTest`) | Não |
 | `controller/SearchControllerTest` | Web (MockMvc, `WebSliceTest`) | Não |
 | `controller/AnswerControllerTest` | Web (MockMvc, `WebSliceTest`) | Não |
 | `exception/GlobalExceptionHandlerTest` | Web (MockMvc, `WebSliceTest`) | Não |
 | `config/SecurityConfigTest` | Web (MockMvc, `WebSliceTest`; matriz `ddt/security-matrix.csv`) | Não |
+| `logging/RequestLoggingWebTest` | Web (MockMvc, `WebSliceTest`; matriz `ddt/request-log-matrix.csv`, linha de log nos 2xx, 401, 403 e 404) | Não |
 | `SampleDocumentsIT` | Integração sem Spring: lê os PDFs de `documents/` e confere com `documents/gabarito.md` | Não |
 | `TenantRagPgvectorApplicationIT` | Integração (`AbstractIntegrationTest`) | Sim |
 | `SchemaMigrationIT` | Integração | Sim |
@@ -70,6 +73,7 @@ Classes de teste existentes hoje:
 | `DocumentIngestionIT` | Integração (upload ponta a ponta, reenvio, rollback) | Sim |
 | `UploadLimitIT` | Integração com servidor real e a configuração real do `application.properties` (limite de 5 MB e `server.tomcat.max-swallow-size`, que o MockMvc não aplica) | Sim |
 | `TenantIsolationIT` | Integração (isolamento entre clientes na busca e no `/ask`, massa `ddt/isolation-matrix.csv`) | Sim |
+| `RequestLoggingIT` | Integração (nenhuma chave, hash, senha do banco, pergunta ou nome de arquivo no log) | Sim |
 | `RagQualityOpenAiIT` | Opt-in, OpenAI real (tag `openai`) | Não (só a OpenAI) |
 
 Todas ficam em `src/test/java/br/com/rag_pgvector/`. Cada teste traz o ID do cenário no `@DisplayName` (ex.: `CT-020 — ...`); o catálogo está em [QA 05 — Cenários de teste](../QA/05%20Cenarios%20de%20teste.md). Massas de dados (DDT) ficam em `src/test/resources/ddt/`. Os PDFs dos testes unitários e de integração são gerados em memória pelo `support/TestPdfFactory`; só o `SampleDocumentsIT` usa os PDFs de `documents/`.

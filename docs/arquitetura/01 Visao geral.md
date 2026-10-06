@@ -42,7 +42,7 @@ Em ordem de prioridade:
 | Segurança | Spring Security, chave de API por cliente | ADR-008 |
 | Erros | `ProblemDetail` (RFC 9457) | ADR-010 |
 | Documentação da API | springdoc-openapi 3.1 (OpenAPI 3 + Swagger UI) | ADR-013 |
-| Log | SLF4J + Logback do Spring Boot; log por requisição com trace ID (filtro servlet + MDC), sem dependência nova | ADR-015 (em revisão) |
+| Log | SLF4J + Logback do Spring Boot; log por requisição com trace ID (filtro servlet + MDC), sem dependência nova | ADR-015 |
 | Testes | JUnit 5, Mockito, MockMvc, Testcontainers | ADR-012 |
 
 ## 5. Visão de contexto
@@ -101,5 +101,5 @@ As três camadas da regra de segurança do README aparecem na figura: **controle
 - Exclusão e edição de clientes e documentos.
 - Formatos além de PDF; OCR de PDF escaneado.
 - Deploy em nuvem, multi-instância.
-- Observabilidade avançada: métricas, tracing distribuído (propagação de contexto entre serviços, `traceparent`), exportação para ferramentas externas e painéis. **Está no escopo** só o log básico por requisição do RF-013 — uma linha por chamada com método, endpoint, status, cliente, duração e trace ID, e o mesmo trace ID nas demais linhas de log da requisição (ADR-015, em revisão).
+- Observabilidade avançada: métricas, tracing distribuído (propagação de contexto entre serviços, `traceparent`), exportação para ferramentas externas e painéis. **Está no escopo** só o log básico por requisição do RF-013 — uma linha por chamada com método, endpoint, status, cliente, duração e trace ID, e o mesmo trace ID nas demais linhas de log da requisição (ADR-015).
 - Login de usuários finais; a identidade é o cliente, representado pela chave de API.

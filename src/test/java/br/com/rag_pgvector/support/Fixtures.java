@@ -13,7 +13,6 @@ public final class Fixtures {
 	public static final String CHAVE_A = "chave-do-cliente-a";
 	public static final String CHAVE_B = "chave-do-cliente-b";
 
-	/** Dimensão do vetor de embedding (ADR-006). */
 	public static final int DIMENSAO_EMBEDDING = 768;
 
 	private Fixtures() {

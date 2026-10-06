@@ -131,7 +131,7 @@ Alta — Faz parte da primeira entrega (pergunta e resposta por cliente): o usu�
 
 ## Status
 
-- Status: Em andamento — card HU-006 Concluído em 2026-10-05 (testes automáticos e manuais OK, revisão aprovada) e reaberto no mesmo dia para a refatoração da ADR-014 (T-411): implementada, `mvnw verify` 269 de 269, card Em revisão aguardando a reconferência do revisor (inclusive o achado #3); entra na release v0.1.0 (Planejada).
+- Status: Concluído — entregue na v0.1.0 (Produção, 2026-10-06).
 - Prontidão: pronto para desenvolvimento (modelo em ADR-006, cadastro de clientes em ADR-009 e acesso em ADR-008, todas aprovadas); DP-03 decidida em 2026-10-02.
 - 2026-10-02: `ChunkRepository.saveAll`, `DocumentService`, `DocumentWriter`, `DocumentController` e `DocumentResponseDTO` implementados; CT-050 a CT-059 passando, inclusive os P1 CT-050, CT-055, CT-056, CT-057 e CT-058 ([evidência](../QA/evidencias/execucoes/2026-10-02-rf-005-rf-006.md)). Aguarda a verificação do QA e a revisão de código.
 - 2026-10-05: DP-02 revista pelo usuário: limite de upload passa de 10 MB para 5 MB (413 com title "Arquivo muito grande" e detail "O arquivo excede o tamanho máximo permitido de 5 MB."). CT-053 e CT-137 passam a usar 5 MB; falta ajustar o código, a arquitetura e os guias.

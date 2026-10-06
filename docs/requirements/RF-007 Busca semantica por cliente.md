@@ -118,6 +118,6 @@ Alta — Faz parte da primeira entrega (pergunta e resposta por cliente): o usu�
 
 ## Status
 
-- Status: Em andamento — card HU-007 Concluído em 2026-10-05 (testes automáticos e manuais OK, revisão aprovada); entra na release v0.1.0 (Planejada).
+- Status: Concluído — entregue na v0.1.0 (Produção, 2026-10-06).
 - Prontidão: pronto para desenvolvimento (modelo em ADR-006 e acesso em ADR-008, ambas aprovadas).
 - 2026-10-02: T-501 a T-503 concluídas (com T-504 e T-505); todos os cenários passando, inclusive os P1 CT-065 e CT-110 [evidência](../QA/evidencias/execucoes/2026-10-02-rf-007.md).

@@ -20,11 +20,11 @@ Código já presente na cópia de trabalho, mas fora da release v0.1.0 porque o 
   - HU-013 (RF-003) — Bloqueado: restringir o formato do nome do cliente; decisão pendente sobre o formato aceito, a mensagem do 400 e os clientes já cadastrados.
   - HU-015 e HU-014 (RF-007) — Aguardando: decidir e depois implementar um limiar mínimo de similaridade na busca (hoje `minScore` 0, RF-007 DP-03).
 
-## [0.1.0] - 2026-10-05 — Planejada
+## [0.1.0] - 2026-10-06
 
-Primeira entrega de funcionalidade: cliente cadastrado envia PDFs, busca e pergunta só sobre os próprios documentos. Escopo pedido pelo usuário em 2026-10-05: cards HU-001 a HU-009 (RF-001 a RF-009), todos `Concluído`, com testes automáticos e manuais OK e revisões aprovadas para fechamento. Checklist e pendências em `Releases.json` (notas da release).
+Primeira entrega de funcionalidade, em Produção desde 2026-10-06 com aprovação do usuário: cliente cadastrado envia PDFs, busca e pergunta só sobre os próprios documentos. Escopo pedido pelo usuário em 2026-10-05: cards HU-001 a HU-009 (RF-001 a RF-009), todos `Concluído`, com testes automáticos e manuais OK e revisões aprovadas para fechamento. Checklist e pendências em `Releases.json` (notas da release).
 
-Histórico desta versão: preparada em 2026-10-01 só com o RF-001; em 2026-10-02 o RF-001 saiu porque o HU-001 voltou para os testes manuais (CT-116). A versão nunca foi publicada (sem tag), por isso foi reaproveitada.
+Histórico desta versão: preparada em 2026-10-01 só com o RF-001; em 2026-10-02 o RF-001 saiu porque o HU-001 voltou para os testes manuais (CT-116). A versão não tinha sido publicada, por isso foi reaproveitada.
 
 ### Adicionado
 
@@ -66,4 +66,4 @@ Histórico desta versão: preparada em 2026-10-01 só com o RF-001; em 2026-10-0
 
 - Documentação: resolvida em 2026-10-05 — guias e arquitetura atualizados para o limite de 5 MB.
 - Achados de revisão abertos, todos Baixa ou Mínima (nenhum Alta ou Média): RF-001 #7, RF-003 #4, RF-004 #3, RF-006 #2 e #4, RF-007 #1 a #4, RF-008 #1 a #4, RF-009 #1 (requisição recusada pelo firewall do Spring Security sai 401, não 400).
-- Sem git por decisão do usuário (2026-10-05): sem commit, tag ou push. A promoção para Homologação depende só da aprovação do usuário.
+- Código no commit `4f27e73` (2026-10-06, feito pelo usuário); sem tag por decisão do usuário (projeto de estudo).

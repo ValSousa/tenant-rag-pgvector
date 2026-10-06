@@ -123,7 +123,7 @@ Alta — Faz parte da primeira entrega (pergunta e resposta por cliente): o usu�
 
 ## Status
 
-- Status: Em andamento — card HU-002 Concluído em 2026-10-05 (testes automáticos e manuais OK, revisão aprovada); entra na release v0.1.0 (Planejada).
+- Status: Concluído — entregue na v0.1.0 (Produção, 2026-10-06).
 - Prontidão: implementado em 2026-10-01 (T-104 a T-107); CT-051 passando desde 2026-10-02; falta o fechamento do QA e da revisão de código.
 - 2026-10-01: migration V1, entidades, enum e repositórios implementados; CT-002 e CT-010 a CT-015 passando ([evidência](../QA/evidencias/execucoes/2026-10-01-rf-002.md)). Falta o CT-051 (parte do `PgVectorEmbeddingStore` do CA-04), que depende do `ChunkRepository` da T-407 (RF-006).
 - 2026-10-01: o CT-016 (`EntityMappingIT`) tinha uma comparação de horário instável (o PostgreSQL arredonda para microssegundos e o teste truncava); corrigida com tolerância de 1 µs. Todos os cenários do RF-002 continuam passando ([evidência](../QA/evidencias/execucoes/2026-10-01-rf-003-rf-004.md)).

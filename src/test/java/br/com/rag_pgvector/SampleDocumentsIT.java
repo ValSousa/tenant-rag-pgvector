@@ -55,10 +55,10 @@ class SampleDocumentsIT {
 
 		assertThat(exclusivos.get("A")).isNotEmpty();
 		assertThat(exclusivos.get("B")).isNotEmpty();
-		// Cada valor está nos PDFs do próprio cliente (prova que a busca abaixo é significativa)...
+
 		assertThat(exclusivos.get("A")).allSatisfy(valor -> assertThat(textoA).contains(valor));
 		assertThat(exclusivos.get("B")).allSatisfy(valor -> assertThat(textoB).contains(valor));
-		// ...e nunca nos do outro
+
 		assertThat(exclusivos.get("A")).allSatisfy(valor -> assertThat(textoB).doesNotContain(valor));
 		assertThat(exclusivos.get("B")).allSatisfy(valor -> assertThat(textoA).doesNotContain(valor));
 	}
@@ -95,7 +95,6 @@ class SampleDocumentsIT {
 		}
 	}
 
-	/** Texto dos 3 PDFs do cliente, com espaços e quebras de linha reduzidos a um espaço. */
 	private String textoDoCliente(String pasta) throws IOException {
 		StringBuilder texto = new StringBuilder();
 		for (String arquivo : ARQUIVOS) {
@@ -104,7 +103,6 @@ class SampleDocumentsIT {
 		return texto.toString().replaceAll("\\s+", " ");
 	}
 
-	/** Itens {@code - `valor`} das subseções "### Cliente A" e "### Cliente B" de "## Valores exclusivos". */
 	private static Map<String, List<String>> valoresExclusivos() throws IOException {
 		String secao = secao(lerGabarito(), "## Valores exclusivos");
 		Map<String, List<String>> valores = new LinkedHashMap<>();
@@ -121,12 +119,10 @@ class SampleDocumentsIT {
 		return valores;
 	}
 
-	/** Gabarito com quebras de linha normalizadas (o arquivo pode estar com CRLF no Windows). */
 	private static String lerGabarito() throws IOException {
 		return Files.readString(GABARITO, StandardCharsets.UTF_8).replace("\r\n", "\n");
 	}
 
-	/** Conteúdo da seção de nível 2 com o título dado, até a próxima seção de nível 2. */
 	private static String secao(String markdown, String titulo) {
 		int inicio = markdown.indexOf(titulo + "\n");
 		assertThat(inicio).as("seção '%s' no gabarito", titulo).isNotNegative();
@@ -134,7 +130,6 @@ class SampleDocumentsIT {
 		return markdown.substring(inicio + titulo.length(), fim < 0 ? markdown.length() : fim);
 	}
 
-	/** Linhas de dados da primeira tabela da seção (sem cabeçalho e separador), com as células sem espaços. */
 	private static List<String[]> linhasDeTabela(String secao) {
 		List<String> linhas = secao.lines().map(String::strip).filter(linha -> linha.startsWith("|")).toList();
 		return linhas.stream().skip(2)

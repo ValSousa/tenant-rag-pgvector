@@ -4,7 +4,7 @@
 
 ```mermaid
 flowchart TB
-    log[logging<br/>log por requisição<br/>ADR-015, em revisão]
+    log[logging<br/>log por requisição<br/>ADR-015]
     sec[security<br/>filtro de chave de API]
     ctl[controller]
     val[validator<br/>entrada fora do Bean Validation]
@@ -43,7 +43,7 @@ Regras:
 - `enums` não depende de nada; pode ser usado por `entity`, `dto`, `service` e `controller`.
 - `ingestion` é Java puro (sem Spring Data, sem HTTP), fácil de testar isolado.
 - O `clientId` atravessa todas as camadas como parâmetro explícito; não existe "cliente atual" escondido em variável estática ou `ThreadLocal` dentro de service ou repository.
-- `logging` (proposto na ADR-015, em revisão) só envolve a requisição: não chama `controller`, `service` nem `repository`, não lê cabeçalhos nem corpo e só coloca o `traceId` no MDC do SLF4J. O MDC serve apenas para o log; nenhuma regra de negócio lê valores dele (a regra do `clientId` explícito acima continua valendo).
+- `logging` (ADR-015) só envolve a requisição: não chama `controller`, `service` nem `repository`, não lê cabeçalhos nem corpo e só coloca o `traceId` no MDC do SLF4J. O MDC serve apenas para o log; nenhuma regra de negócio lê valores dele (a regra do `clientId` explícito acima continua valendo).
 
 ## 2. Estrutura de pacotes
 
@@ -97,7 +97,7 @@ br/com/rag_pgvector/
 │   ├── InvalidFileException.java     (novo; ADR-014)
 │   ├── AiProviderException.java      (novo)
 │   └── GlobalExceptionHandler.java
-├── logging/                          (novo; ADR-015, em revisão — ainda não implementado)
+├── logging/                          (novo; ADR-015 — ainda não implementado)
 │   └── RequestLoggingFilter.java
 └── security/                         (novo)
     ├── ApiKeyAuthenticationFilter.java
@@ -235,9 +235,9 @@ Regra (ADR-014): o código não usa `ResponseStatusException`. Erro novo de neg�
 
 Detalhe em [07 Seguranca e isolamento.md](07%20Seguranca%20e%20isolamento.md).
 
-### 3.9 logging (ADR-015, em revisão)
+### 3.9 logging (ADR-015)
 
-Pacote `br.com.rag_pgvector.logging`, proposto para o RF-013. Só é criado depois que o responsável aprovar a ADR-015 e as decisões pendentes do RF-013 ([Aprovacoes pendentes.md](Aprovacoes%20pendentes.md)).
+Pacote `br.com.rag_pgvector.logging`, para o RF-013 (ADR-015 e decisões DP-01 a DP-07 do RF-013 aprovadas em 2026-10-06). Ainda não implementado; é criado na Etapa 8 do [plano](09%20Plano%20de%20implementacao.md).
 
 | Componente | Responsabilidade |
 |---|---|
@@ -258,7 +258,7 @@ O trace ID chega às demais linhas de log (por exemplo, o `log.error` do `Global
 | Controller, Service, Repository | `Controller`, `Service`, `Repository` | `SearchController`, `SearchService`, `ChunkRepository` |
 | Exceção | `Exception` | `ResourceNotFoundException`, `InvalidFileException` |
 | Validador de entrada | `Validator` | `DocumentFileValidator` |
-| Filtro servlet | `Filter` | `ApiKeyAuthenticationFilter`, `RequestLoggingFilter` (ADR-015, em revisão) |
+| Filtro servlet | `Filter` | `ApiKeyAuthenticationFilter`, `RequestLoggingFilter` (ADR-015) |
 | Enum | `Enum` | `DocumentTypeEnum` |
 
 - Enums ficam no pacote `enums` (seção 3.6.1), nunca dentro de `entity` ou `dto`.

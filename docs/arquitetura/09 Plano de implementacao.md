@@ -84,17 +84,16 @@ Refatoração sem mudança de comportamento externo; não exige dependência nov
 - Teste unitário do `DocumentFileValidator` ([08](08%20Estrategia%20de%20testes.md), seção 6).
 - **Pronto quando:** `mvnw verify` verde com os testes atuais do upload e do `GlobalExceptionHandler` sem alteração de status, títulos e mensagens; nenhum `ResponseStatusException` em `src/main/java`.
 
-### Etapa 8 — Log por requisição (RF-013, ADR-015) — **aguardando aprovação**
+### Etapa 8 — Log por requisição (RF-013, ADR-015) — **pronta para desenvolvimento**
 
-Só começa depois que o responsável aprovar a ADR-015 e decidir as DP-01 a DP-07 do RF-013 ([Aprovacoes pendentes.md](Aprovacoes%20pendentes.md)); o usuário pediu que o desenvolvimento fique para outro momento. Não exige dependência nova no `pom.xml`. Depende da Etapa 3 (segurança, para os 401/403) e da Etapa 2 (`GlobalExceptionHandler`, para o 500 com o mesmo trace ID).
+A ADR-015 e as decisões DP-01 a DP-07 do RF-013 foram aprovadas em 2026-10-06, sem mudanças em relação às recomendações. Prioridade Média; desenvolver agora, para entrar numa próxima release. Não exige dependência nova no `pom.xml`. Depende da Etapa 3 (segurança, para os 401/403) e da Etapa 2 (`GlobalExceptionHandler`, para o 500 com o mesmo trace ID).
 
-1. Ajustar a ADR-015 e os documentos 02, 06 e 08 ao que for decidido nas DPs.
-2. Criar `logging/RequestLoggingFilter` ([02](02%20Componentes%20e%20camadas.md), seção 3.9; esboço na ADR-015) e as propriedades `app.logging.environment` e `logging.pattern.correlation` ([06](06%20Integracoes%20e%20configuracao.md), seção 9). Nenhuma mudança no `GlobalExceptionHandler`, no `SecurityConfig` ou nos controllers.
-3. Se a DP-03 mantiver o cabeçalho `X-Trace-Id`, registrar o cabeçalho de resposta em [05](05%20API%20REST.md), seção 1, e no `OpenApiConfig` se o responsável quiser vê-lo no Swagger.
-4. Testes de [08](08%20Estrategia%20de%20testes.md), seção 6.1, e os `CT-xxx` que o QA definir para o RF-013.
-5. Atualizar o `CLAUDE.md` com o pacote `logging` e o guia de execução (`docs/guias/`) com onde ler o log e como achar uma requisição pelo trace ID.
+1. Criar `logging/RequestLoggingFilter` ([02](02%20Componentes%20e%20camadas.md), seção 3.9; esboço na ADR-015) e as propriedades `app.logging.environment` e `logging.pattern.correlation` ([06](06%20Integracoes%20e%20configuracao.md), seção 9). Nenhuma mudança no `GlobalExceptionHandler`, no `SecurityConfig` ou nos controllers.
+2. Devolver o cabeçalho de resposta `X-Trace-Id` (DP-03; já descrito em [05](05%20API%20REST.md), seção 1). Documentá-lo no `OpenApiConfig` não faz parte da etapa.
+3. Testes de [08](08%20Estrategia%20de%20testes.md), seção 6.1, e os `CT-xxx` que o QA definir para o RF-013.
+4. Atualizar o `CLAUDE.md` com o pacote `logging` e o guia de execução (`docs/guias/`) com onde ler o log e como achar uma requisição pelo trace ID.
 
-- **Pronto quando:** `mvnw verify` verde; toda requisição de API gera uma linha com os dez campos (inclusive 401, 403 e 500); o erro do `GlobalExceptionHandler` mostra o mesmo trace ID; nenhum segredo nem hash nas linhas capturadas; respostas iguais às de antes (exceto o cabeçalho novo, se aprovado); nenhum teste chama a OpenAI.
+- **Pronto quando:** `mvnw verify` verde; toda requisição de API gera uma linha com os dez campos (inclusive 401, 403 e 500); o erro do `GlobalExceptionHandler` mostra o mesmo trace ID; nenhum segredo nem hash nas linhas capturadas; respostas iguais às de antes (exceto o cabeçalho novo `X-Trace-Id`); nenhum teste chama a OpenAI.
 
 ## 3. Grafo de dependências
 
@@ -108,7 +107,7 @@ flowchart LR
     E4 --> E6[6 Documentos de exemplo]
     E5 --> E7[7 Resposta gerada]
     E6 --> E7
-    E2 --> E8[8 Log por requisição<br/>aguardando aprovação]
+    E2 --> E8[8 Log por requisição<br/>pronta para desenvolvimento]
     E3 --> E8
 ```
 

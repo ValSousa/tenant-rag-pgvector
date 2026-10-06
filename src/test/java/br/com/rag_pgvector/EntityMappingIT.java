@@ -34,7 +34,6 @@ class EntityMappingIT extends AbstractIntegrationTest {
 
 		assertThat(lido.getId()).isEqualTo(gravado.getId());
 		assertThat(lido.getName()).isEqualTo("Cliente A");
-		// timestamptz guarda microssegundos e arredonda os nanossegundos (não trunca)
 		assertThat(lido.getCreatedAt()).isCloseTo(gravado.getCreatedAt(), within(1, ChronoUnit.MICROS));
 		assertThat(documentoLido.getClient().getId()).isEqualTo(gravado.getId());
 		assertThat(documentoLido.getFileName()).isEqualTo("vistoria.pdf");

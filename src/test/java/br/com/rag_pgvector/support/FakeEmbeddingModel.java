@@ -44,7 +44,6 @@ public class FakeEmbeddingModel implements EmbeddingModel {
 		return Fixtures.DIMENSAO_EMBEDDING;
 	}
 
-	/** Vetor unitário no eixo do rótulo: similaridade 1 consigo mesmo e 0 com outros rótulos. */
 	public synchronized Embedding fixo(String rotulo) {
 		int eixo = eixos.computeIfAbsent(rotulo, r -> eixos.size());
 		if (eixo >= Fixtures.DIMENSAO_EMBEDDING) {
@@ -55,12 +54,10 @@ public class FakeEmbeddingModel implements EmbeddingModel {
 		return Embedding.from(vetor);
 	}
 
-	/** Faz o texto devolver o vetor dado (usado para a pergunta). */
 	public synchronized void registrar(String texto, Embedding vetor) {
 		registrados.put(texto, vetor);
 	}
 
-	/** A próxima chamada lança a exceção. */
 	public synchronized void falharNaProxima(RuntimeException falha) {
 		proximaFalha = falha;
 	}

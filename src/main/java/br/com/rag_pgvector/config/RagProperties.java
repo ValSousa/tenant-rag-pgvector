@@ -7,7 +7,7 @@ import org.springframework.validation.annotation.Validated;
 
 /**
  * Parâmetros do RAG. {@code embeddingDimension} tem de ser igual à da coluna {@code document_chunk.embedding}.
- * {@code chunkSize} e {@code chunkOverlap} são em caracteres (ADR-007). {@code defaultTopK} e
+ * {@code chunkSize} e {@code chunkOverlap} são em caracteres. {@code defaultTopK} e
  * {@code maxTopK} são o padrão e o teto de resultados da busca; {@code answerTopK} é o padrão do
  * {@code /ask}, maior para perguntas que cruzam documentos.
  */

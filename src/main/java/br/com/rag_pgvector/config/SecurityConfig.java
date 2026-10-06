@@ -52,8 +52,6 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/clients/{clientId}").access(AuthorizationManagers.anyOf(
 								AuthorityAuthorizationManager.<RequestAuthorizationContext>hasRole("ADMIN"),
 								clientAccess))
-						// Sem esta regra, "/clients/{clientId}/**" também casaria com "/clients/{clientId}" (zero segmentos)
-						// e liberaria ao próprio cliente PUT, DELETE e PATCH nessa rota
 						.requestMatchers("/clients/{clientId}").denyAll()
 						.requestMatchers("/clients/{clientId}/**").access(clientAccess)
 						.anyRequest().denyAll());

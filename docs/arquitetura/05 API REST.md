@@ -7,7 +7,7 @@
 - Autenticação: cabeçalho `X-API-Key` em todas as rotas (ADR-008).
 - Erros: `application/problem+json` (ADR-010).
 - `{clientId}` é sempre o número do cliente; o cliente dono de qualquer dado vem do caminho, nunca do corpo.
-- Proposto, ainda não implementado (ADR-015, em revisão; RF-013 DP-03): toda resposta da API traria o cabeçalho `X-Trace-Id` com o trace ID gerado pela aplicação, o mesmo das linhas de log da requisição. Status, corpo e os demais cabeçalhos não mudam.
+- Cabeçalho de resposta `X-Trace-Id` (ADR-015; RF-013 DP-03, aprovada em 2026-10-06; ainda não implementado, Etapa 8 do plano): toda resposta da API traz o trace ID gerado pela aplicação, o mesmo das linhas de log da requisição. A aplicação não aceita trace ID enviado por quem chama. Status, corpo e os demais cabeçalhos não mudam.
 
 ## 1.1 Como chamar a API
 

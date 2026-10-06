@@ -95,6 +95,6 @@ Alta — Faz parte da primeira entrega (pergunta e resposta por cliente): o usu�
 
 ## Status
 
-- Status: Em andamento — card HU-004 Concluído em 2026-10-05 (testes automáticos e manuais OK, revisão aprovada); entra na release v0.1.0 (Planejada).
+- Status: Concluído — entregue na v0.1.0 (Produção, 2026-10-06).
 - Prontidão: pronto para desenvolvimento (decisões em ADR-005 e ADR-006).
 - 2026-10-01: `EmbeddingService` (`embedQuery`, `embedDocuments` em uma chamada), `AiConfig` com `OpenAiEmbeddingModel` de 768 dimensões, `FakeEmbeddingModel` e `AiTestConfig`. CT-030 a CT-034 e CT-036 passando ([evidência](../QA/evidencias/execucoes/2026-10-01-rf-003-rf-004.md)). CT-035 escrito em `RagQualityOpenAiIT` (opt-in), ainda não executado: precisa de `OPENAI_API_KEY`.

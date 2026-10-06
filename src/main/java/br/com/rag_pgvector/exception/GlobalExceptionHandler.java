@@ -83,13 +83,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(AccessDeniedException.class)
 	ProblemDetail handleAccessDenied(AccessDeniedException ex) {
-		// Mesma mensagem para qualquer recusa: não revela se o outro cliente existe
 		return problem(HttpStatus.FORBIDDEN, "Você não tem permissão para acessar este recurso.");
 	}
 
 	@ExceptionHandler(Exception.class)
 	ProblemDetail handleUnexpected(Exception ex) {
-		// Detalhes só no log
 		log.error("Erro inesperado", ex);
 		return problem(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro inesperado.");
 	}
@@ -105,12 +103,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return handleExceptionInternal(ex, body, headers, status, request);
 	}
 
-	/** Traduz o título dos erros que o próprio Spring MVC gera (JSON malformado, método não suportado etc.). */
 	@Override
 	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
 			HttpStatusCode statusCode, WebRequest request) {
 		if (body == null && ex instanceof ErrorResponse errorResponse) {
-			// Alguns handlers do Spring (parte ou parâmetro ausente, 405, 415) passam o corpo nulo
 			body = errorResponse.getBody();
 		}
 		if (body instanceof ProblemDetail problemDetail) {
@@ -128,7 +124,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return super.handleExceptionInternal(ex, body, headers, statusCode, request);
 	}
 
-	/** Mensagens em português para os erros de entrada que o Spring MVC gera com texto em inglês. */
 	private static String detalheEmPortugues(Exception ex) {
 		return switch (ex) {
 			case MaxUploadSizeExceededException e -> "O arquivo excede o tamanho máximo permitido de 5 MB.";
@@ -154,7 +149,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return problem;
 	}
 
-	/** Item da lista {@code errors} de um erro de validação. */
 	public record FieldErrorDTO(String field, String message) {
 	}
 

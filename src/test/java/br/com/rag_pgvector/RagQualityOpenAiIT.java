@@ -108,7 +108,6 @@ class RagQualityOpenAiIT {
 				.doesNotContainPattern("R\\$\\s*\\d");
 	}
 
-	/** Cria os Clientes A e B e ingere os 3 PDFs de cada um, uma única vez. */
 	private Long clienteDoGabarito(String cliente) throws IOException {
 		synchronized (CLIENTES) {
 			if (CLIENTES.isEmpty()) {

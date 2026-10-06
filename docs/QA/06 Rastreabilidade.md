@@ -7,7 +7,7 @@ Gerado a partir de [05 Cenarios de teste.md](05%20Cenarios%20de%20teste.md) e do
 - **Cenários:** 108 — P1: 33, P2: 61, P3: 14
 - **Por nível** (um cenário pode ter mais de um): U 28, W 24, I 34, O 3, M 25
 - **Execução:** `mvnw test` 80, manual 28 (25 roteiros de nível M em [07 Testes manuais.md](07%20Testes%20manuais.md) + 3 opt-in com OpenAI real, nível O, disparados por uma pessoa; desde 2026-10-02)
-- **Bloqueados por decisão ou etapa:** nenhum com status Bloqueado (CT-059 desbloqueado em 2026-10-02 com a decisão do RF-006 DP-03: reenvio substitui). Os 13 cenários do RF-013 (CT-138 a CT-150, 2026-10-05) estão `Não iniciada`: o card HU-016 está Bloqueado e o resultado esperado de 11 deles depende das DP-02 a DP-07 do RF-013 (hoje pela recomendação da ADR-015)
+- **Bloqueados por decisão ou etapa:** nenhum com status Bloqueado (CT-059 desbloqueado em 2026-10-02 com a decisão do RF-006 DP-03: reenvio substitui). Os 13 cenários do RF-013 (CT-138 a CT-150, 2026-10-05) estão `Não iniciada`: o card HU-016 está Aguardando o desenvolvimento; o resultado esperado segue as DP-02 a DP-07 do RF-013, decididas em 2026-10-06
 
 ## 2. Critérios de aceite e fluxos alternativos → cenários
 
@@ -185,18 +185,21 @@ Regras e decisões também cobertas: RN-02 (CT-036)
 |---|---|---|
 | FA-01 | Requisição recusada pela segurança (sem chave, chave inválida ou acesso a outro cliente): a linha de log é... | CT-143, CT-149 |
 | FA-02 | Requisição que termina em erro (4xx ou 5xx tratado pelo `GlobalExceptionHandler`): a linha de log é regist... | CT-140, CT-144, CT-149 |
-| FA-03 | Requisição sem cliente identificado (sem autenticação ou rota sem `clientId`): o campo `clientId` fica vaz... | CT-139, CT-143, CT-149 |
-| CA-01 | Cada requisição a um endpoint da API gera exatamente uma linha de log de requisição com os dez campos da RN-02. | CT-138, CT-143, CT-149 |
-| CA-02 | `GET /clients/{id}` com a chave do próprio cliente gera uma linha com `method=GET`, `endpoint=/clients/{id}... | CT-139, CT-143, CT-149 |
-| CA-03 | Uma requisição sem `X-API-Key` gera uma linha com `status=401`; a chave de um cliente na rota de outro ger... | CT-143, CT-149 |
-| CA-04 | Uma requisição que termina em 500 gera uma linha com `status=500`, e o log de erro do `GlobalExceptionHand... | CT-144 |
-| CA-05 | Duas requisições seguidas sem trace ID de entrada têm `traceId` diferentes. | CT-141, CT-149 |
+| FA-03 | Requisição em rota sem `/clients/{clientId}` no caminho (ex.: `POST /clients`): o campo `clientId` é regis... | CT-139, CT-143, CT-149 |
+| FA-04 | Requisição às rotas de apoio (Swagger UI e `/v3/api-docs`): não gera linha de log de requisição (DP-07). | CT-142, CT-149 |
+| FA-05 | Requisição que chega com um trace ID num cabeçalho: o valor de entrada não é aceito; a aplicação gera o se... | CT-141 |
+| CA-01 | Cada requisição a um endpoint da API gera exatamente uma linha de log de requisição em texto chave=valor c... | CT-138, CT-143, CT-149 |
+| CA-02 | `GET /clients/{id}` com a chave do próprio cliente gera uma linha `INFO` com `method=GET`, `endpoint=/clie... | CT-139, CT-143, CT-149 |
+| CA-03 | Uma requisição sem `X-API-Key` a `/clients/{id}` gera uma linha `WARN` com `status=401` e `clientId={id}`;... | CT-143, CT-149 |
+| CA-04 | Uma requisição que termina em 500 gera uma linha `ERROR` com `status=500`, e o log de erro do `GlobalExcep... | CT-144 |
+| CA-05 | Duas requisições seguidas têm `traceId` diferentes; um trace ID enviado pelo consumidor num cabeçalho de e... | CT-141, CT-149 |
 | CA-06 | Com chaves conhecidas nos testes (de cliente, de administrador, da OpenAI e senha do banco), nenhuma linha... | CT-146, CT-150 |
-| CA-07 | A linha de log de `POST /clients/{id}/ask` e de `POST /clients/{id}/documents` não contém a pergunta nem o... | CT-147, CT-150 |
-| CA-08 | A resposta da API (status, cabeçalhos já existentes e corpo) é a mesma com e sem o log. | CT-145 |
+| CA-07 | As linhas de log de `POST /clients/{id}/ask`, `POST /clients/{id}/search` e `POST /clients/{id}/documents`... | CT-147, CT-150 |
+| CA-08 | A resposta da API (status, cabeçalhos já existentes e corpo) é a mesma com e sem o log; a única diferença... | CT-145 |
 | CA-09 | Os testes automáticos verificam os campos do log com `mvnw test`, sem chamar a OpenAI. | CT-138 a CT-148 (CT-146 confere que a OpenAI não é chamada) |
+| CA-10 | Requisições ao Swagger UI e a `/v3/api-docs` não geram linha de log de requisição; uma requisição a rota s... | CT-139, CT-142, CT-143, CT-149 |
 
-Regras e decisões também cobertas: RN-01 (CT-140, CT-142, CT-143, CT-149), RN-02 (CT-138, CT-149), RN-03 (CT-138, CT-149), RN-04 (CT-141, CT-144, CT-149), RN-05 (CT-146, CT-148, CT-150), RN-06 (CT-139, CT-147, CT-150), RN-07 (CT-140, CT-145). Esperado dependente de decisão pendente (recomendação da ADR-015 até a decisão do usuário): DP-02 (CT-138, CT-149), DP-03 (CT-141, CT-144, CT-145, CT-149), DP-04 (CT-138, CT-149), DP-05 (CT-139, CT-143, CT-149), DP-06 (CT-139, CT-143, CT-147, CT-150), DP-07 (CT-140, CT-142, CT-143, CT-149)
+Regras e decisões também cobertas: RN-01 (CT-140, CT-142, CT-143, CT-149), RN-02 (CT-138, CT-149), RN-03 (CT-138, CT-149), RN-04 (CT-141, CT-144, CT-149), RN-05 (CT-146, CT-148, CT-150), RN-06 (CT-138, CT-139, CT-147, CT-150), RN-07 (CT-140, CT-145), RN-08 (CT-140, CT-142, CT-143, CT-149), RN-09 (CT-139, CT-143, CT-149). Esperado conforme as DP decididas em 2026-10-06 (recomendação da ADR-015 aprovada): DP-02 (CT-138, CT-149), DP-03 (CT-141, CT-144, CT-145, CT-149), DP-04 (CT-138, CT-149), DP-05 (CT-139, CT-143, CT-149), DP-06 (CT-139, CT-143, CT-147, CT-150), DP-07 (CT-140, CT-142, CT-143, CT-149)
 
 ## 3. Critérios de aceite sem cenário
 

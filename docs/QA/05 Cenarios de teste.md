@@ -901,23 +901,24 @@ E nenhum valor exclusivo do outro cliente (gabarito) aparece; A recebe R$ 4.000,
 
 ## RF-013 — Log de requisições para rastreamento
 
-Criados em 2026-10-05 a partir do RF-013, da ADR-015 (Em revisão) e da [estratégia de testes da arquitetura, seção 6.1](../arquitetura/08%20Estrategia%20de%20testes.md). As DP-02 a DP-07 do RF-013 ainda não foram decididas: o resultado esperado abaixo segue a **recomendação do arquiteto na ADR-015** (texto chave=valor; trace ID gerado pela aplicação, 32 hexadecimais, devolvido em `X-Trace-Id`, sem aceitar trace ID de entrada; `service` = `spring.application.name`, `environment` = `app.logging.environment`, padrão `local`; `clientId` do caminho `/clients/{clientId}` ou `-`; fora do log: corpo, pergunta, texto e nome do arquivo, nome do cliente, query string e cabeçalhos; Swagger e `/v3/api-docs` sem linha; `INFO` < 400, `WARN` 4xx, `ERROR` 5xx). O campo **DP** de cada cenário diz qual decisão afeta o esperado; ele pode mudar depois da decisão do usuário, e o QA revisa estes cenários quando o RF-013 registrar as respostas. Card HU-016 (Bloqueado).
+Criados em 2026-10-05 a partir do RF-013, da ADR-015 e da [estratégia de testes da arquitetura, seção 6.1](../arquitetura/08%20Estrategia%20de%20testes.md); revisados em 2026-10-06, depois que o usuário aprovou a ADR-015 e decidiu as DP-01 a DP-07 do RF-013 como a recomendação. O resultado esperado abaixo segue **as DP decididas em 2026-10-06** (texto chave=valor; trace ID gerado pela aplicação, 32 hexadecimais, devolvido em `X-Trace-Id`, sem aceitar trace ID de entrada; `service` = `spring.application.name`, `environment` = `app.logging.environment`, padrão `local`; `clientId` do caminho `/clients/{clientId}` ou `-`; fora do log: corpo, pergunta, texto e nome do arquivo, nome do cliente, query string, cabeçalhos, IP e User-Agent; Swagger e `/v3/api-docs` sem linha; `INFO` < 400, `WARN` 4xx, `ERROR` 5xx). O campo **DP** de cada cenário diz em qual decisão o esperado se baseia (todas decididas em 2026-10-06). Card HU-016 (Aguardando).
 
-Regras para todos: o log é lido com o `OutputCaptureExtension` do Spring Boot (`CapturedOutput`); comparar com `contains`/`doesNotContain` sobre a linha do `RequestLoggingFilter`, sem depender do prefixo do Logback (data, PID, thread); para casar um campo exato, comparar `campo=valor` seguido de espaço ou fim de linha (`endpoint=/clients/1 ` não casa com `endpoint=/clients/10`). Nada chama a OpenAI (`FakeEmbeddingModel` e `FakeChatModel`). Se a DP-02 escolher JSON, os testes leem os campos do JSON; a lógica dos casos não muda.
+Regras para todos: o log é lido com o `OutputCaptureExtension` do Spring Boot (`CapturedOutput`); comparar com `contains`/`doesNotContain` sobre a linha do `RequestLoggingFilter`, sem depender do prefixo do Logback (data, PID, thread); para casar um campo exato, comparar `campo=valor` seguido de espaço ou fim de linha (`endpoint=/clients/1 ` não casa com `endpoint=/clients/10`). Nada chama a OpenAI (`FakeEmbeddingModel` e `FakeChatModel`).
 
 ### CT-138 — Uma linha com os dez campos por requisição
-Nível U · P2 · `RequestLoggingFilterTest` · cobre RF-013 CA-01, RN-02, RN-03, fluxo principal · DP: DP-02 (formato), DP-04 (valores de `service`/`environment`) · Execução: JUnit (`mvnw test`)
+Nível U · P2 · `RequestLoggingFilterTest` · cobre RF-013 CA-01, RN-02, RN-03, RN-06, fluxo principal · DP: DP-02 (formato chave=valor), DP-04 (valores de `service`/`environment`), decididas em 2026-10-06 · Execução: JUnit (`mvnw test`)
 ```text
 Dado o RequestLoggingFilter criado com service "tenant-rag-pgvector" e environment "local"
 E uma cadeia (MockFilterChain) que responde 200 a GET /clients/1
 Quando o filtro processa a requisição
 Então o log capturado tem exatamente uma linha do RequestLoggingFilter
 E ela tem service=tenant-rag-pgvector, environment=local, method=GET, endpoint=/clients/1, status=200, clientId=1, traceId=<não vazio> e duration=<inteiro >= 0>ms
+E não tem outro campo chave=valor além desses oito (nada de cabeçalhos, IP ou User-Agent; a requisição leva User-Agent "AgenteRastreioLog/1.0" e esse valor não aparece)
 E timestamp e level vêm do padrão do log (a linha é INFO)
 ```
 
 ### CT-139 — endpoint sem query string e clientId tirado do caminho (DDT)
-Nível U · P2 · `RequestLoggingFilterTest` · massa `@MethodSource` (ver [04, seção 3.11](04%20Testes%20orientados%20a%20dados.md)) · cobre RF-013 CA-02, FA-03, RN-06 · DP: DP-05 (`clientId`), DP-06 (query string fora) · Execução: JUnit (`mvnw test`)
+Nível U · P2 · `RequestLoggingFilterTest` · massa `@MethodSource` (ver [04, seção 3.11](04%20Testes%20orientados%20a%20dados.md)) · cobre RF-013 CA-02, CA-10 (`clientId=-`), FA-03, RN-06, RN-09 · DP: DP-05 (`clientId`), DP-06 (query string fora), decididas em 2026-10-06 · Execução: JUnit (`mvnw test`)
 ```text
 Dado a requisição da linha da massa (/clients/1, /clients/1/search, /clients/42/ask, /clients, /clients/abc/search, /actuator/env, /clients/1?token=segredo-na-query)
 Quando o filtro processa a requisição
@@ -927,7 +928,7 @@ E a linha não contém "segredo-na-query" nem "token="
 ```
 
 ### CT-140 — Falha na cadeia registra status=500 e a exceção continua
-Nível U · P2 · `RequestLoggingFilterTest` · cobre RF-013 FA-02, RN-01, RN-07 · DP: DP-07 (nível `ERROR`) · Execução: JUnit (`mvnw test`)
+Nível U · P2 · `RequestLoggingFilterTest` · cobre RF-013 FA-02, RN-01, RN-07, RN-08 · DP: DP-07 (nível `ERROR`), decidida em 2026-10-06 · Execução: JUnit (`mvnw test`)
 ```text
 Dado uma cadeia que lança RuntimeException em POST /clients/1/ask
 Quando o filtro processa a requisição
@@ -937,7 +938,7 @@ E o MDC não tem mais a chave traceId
 ```
 
 ### CT-141 — traceId novo a cada requisição, no MDC só durante a requisição
-Nível U · P2 · `RequestLoggingFilterTest` · cobre RF-013 CA-05, RN-04 · DP: DP-03 (origem, formato e cabeçalho `X-Trace-Id`) · Execução: JUnit (`mvnw test`)
+Nível U · P2 · `RequestLoggingFilterTest` · cobre RF-013 CA-05, FA-05, RN-04 · DP: DP-03 (origem, formato e cabeçalho `X-Trace-Id`), decidida em 2026-10-06 · Execução: JUnit (`mvnw test`)
 ```text
 Dado duas requisições seguidas sem trace ID de entrada
 E uma cadeia que guarda o valor de MDC.get("traceId") durante a chamada
@@ -949,7 +950,7 @@ E uma requisição com cabeçalho de entrada X-Trace-Id "abc%0AINFO falso" receb
 ```
 
 ### CT-142 — Nível do log pelo status e rotas de apoio sem linha (DDT)
-Nível U · P3 · `RequestLoggingFilterTest` · massa `@MethodSource` (ver [04, seção 3.11](04%20Testes%20orientados%20a%20dados.md)) · cobre RF-013 RN-01 · DP: DP-07 (rotas de apoio e nível) · Execução: JUnit (`mvnw test`)
+Nível U · P3 · `RequestLoggingFilterTest` · massa `@MethodSource` (ver [04, seção 3.11](04%20Testes%20orientados%20a%20dados.md)) · cobre RF-013 CA-10, FA-04, RN-01, RN-08 · DP: DP-07 (rotas de apoio e nível), decidida em 2026-10-06 · Execução: JUnit (`mvnw test`)
 ```text
 Dado uma cadeia que responde com o status da massa (200, 201, 302, 400, 401, 403, 404, 413, 500, 503)
 Quando o filtro processa a requisição
@@ -958,7 +959,7 @@ E GET /swagger-ui.html, /swagger-ui/index.html e /v3/api-docs não geram linha d
 ```
 
 ### CT-143 — Linha de log para 200, 201, 401, 403 e 404 pela API (DDT)
-Nível W · P2 · `RequestLoggingWebTest` (web slice com `WebSliceTest`) · massa `request-log-matrix.csv` · cobre RF-013 CA-01, CA-02, CA-03, FA-01, FA-03, RN-01 · DP: DP-05 (`clientId` nos 401/403 e nas rotas sem cliente), DP-06 (query string), DP-07 (nível) · Execução: JUnit (`mvnw test`)
+Nível W · P2 · `RequestLoggingWebTest` (web slice com `WebSliceTest`) · massa `request-log-matrix.csv` · cobre RF-013 CA-01, CA-02, CA-03, CA-10 (`POST /clients` com `clientId=-`), FA-01, FA-03, RN-01, RN-08, RN-09 · DP: DP-05 (`clientId` nos 401/403, nas chamadas do administrador e nas rotas sem cliente), DP-06 (query string), DP-07 (nível), decididas em 2026-10-06 · Execução: JUnit (`mvnw test`)
 ```text
 Dado a chave, o método e a rota da linha da massa (services mockados como no WebSliceTest; corpo válido nas linhas POST)
 Quando chamo a API pelo MockMvc
@@ -969,7 +970,7 @@ E o texto capturado não contém o valor da coluna naoContem
 ```
 
 ### CT-144 — Erro 500: o mesmo traceId na linha da requisição e no ERROR do GlobalExceptionHandler
-Nível W · P2 · `GlobalExceptionHandlerTest` (`ThrowingController`) · cobre RF-013 CA-04, FA-02, RN-04; RF-010 FA-01 · DP: DP-03 (trace ID em todas as linhas da requisição, via `logging.pattern.correlation`) · Execução: JUnit (`mvnw test`)
+Nível W · P2 · `GlobalExceptionHandlerTest` (`ThrowingController`) · cobre RF-013 CA-04, FA-02, RN-04; RF-010 FA-01 · DP: DP-03 (trace ID em todas as linhas da requisição, via `logging.pattern.correlation`), decidida em 2026-10-06 · Execução: JUnit (`mvnw test`)
 ```text
 Dado o ThrowingController de teste que lança IllegalStateException
 Quando chamo o endpoint com a chave do dono
@@ -979,7 +980,7 @@ E a linha ERROR "Erro inesperado" do GlobalExceptionHandler contém o mesmo valo
 ```
 
 ### CT-145 — Resposta da API igual com e sem o log
-Nível U + W · P2 · `RequestLoggingFilterTest` e `RequestLoggingWebTest` · cobre RF-013 CA-08, RN-07, passo 5 do fluxo principal · DP: DP-03 (o cabeçalho `X-Trace-Id` é o único acréscimo permitido) · Execução: JUnit (`mvnw test`)
+Nível U + W · P2 · `RequestLoggingFilterTest` e `RequestLoggingWebTest` · cobre RF-013 CA-08, RN-07, passo 5 do fluxo principal · DP: DP-03 (o cabeçalho `X-Trace-Id` é o único acréscimo permitido), decidida em 2026-10-06 · Execução: JUnit (`mvnw test`)
 ```text
 Dado uma cadeia que escreve status 201, Content-Type application/json, um cabeçalho Location e um corpo JSON
 Quando a chamo direto e depois através do RequestLoggingFilter
@@ -988,7 +989,7 @@ E no web slice os testes existentes de ClientControllerTest, SearchControllerTes
 ```
 
 ### CT-146 — Nenhuma chave, hash ou senha aparece no log
-Nível I · **P1** · `RequestLoggingIT` (sobre o `AbstractIntegrationTest`, `OutputCaptureExtension`) · cobre RF-013 CA-06, CA-09, RN-05 · DP: — (os segredos nunca entram, qualquer que seja a decisão) · Execução: JUnit (`mvnw test`)
+Nível I · **P1** · `RequestLoggingIT` (sobre o `AbstractIntegrationTest`, `OutputCaptureExtension`) · cobre RF-013 CA-06, CA-09, RN-05 · DP: — (os segredos nunca entram no log, RN-05) · Execução: JUnit (`mvnw test`)
 ```text
 Dado o contêiner de teste com uma senha distinta (ex.: withPassword("senha-db-log-it") no PostgresTestcontainersConfig)
 E a chave de administrador test-admin-key e a chave falsa da OpenAI test-key-nao-usada do perfil test
@@ -1000,13 +1001,14 @@ E nenhuma chamada foi feita à OpenAI (os fakes atenderam)
 ```
 
 ### CT-147 — Linhas de /ask, /search e /documents sem pergunta, texto, nome de arquivo ou nome do cliente
-Nível I · **P1** · `RequestLoggingIT` · cobre RF-013 CA-07, RN-06 · DP: DP-06 (o que fica fora do log) · Execução: JUnit (`mvnw test`)
+Nível I · **P1** · `RequestLoggingIT` · cobre RF-013 CA-07 (`/ask`, `/search` e `/documents`), RN-06 · DP: DP-06 (o que fica fora do log), decidida em 2026-10-06 · Execução: JUnit (`mvnw test`)
 ```text
 Dado um cliente cadastrado com o nome "Segurado Rastreio Log"
 Quando ele envia o PDF "apolice-rastreio-log.pdf" com o texto "Franquia exclusiva R$ 7.777,77"
 E pergunta "Qual a franquia rastreio log?" no /search e no /ask
+E as três requisições levam o cabeçalho User-Agent "AgenteRastreioLog/1.0"
 Então as linhas do RequestLoggingFilter dessas requisições existem, com status 201 e 200
-E o texto capturado não contém "Segurado Rastreio Log", "apolice-rastreio-log.pdf", "7.777,77" nem "franquia rastreio log"
+E o texto capturado não contém "Segurado Rastreio Log", "apolice-rastreio-log.pdf", "7.777,77", "franquia rastreio log" nem "AgenteRastreioLog"
 ```
 
 ### CT-148 — Configuração versionada não liga log de cabeçalhos, SQL com parâmetros ou da OpenAI
@@ -1020,7 +1022,7 @@ E nenhuma propriedade liga log-requests ou log-responses
 ```
 
 ### CT-149 — Linhas de log das requisições no console da IDE
-Nível M · P2 · roteiro em [07](07%20Testes%20manuais.md) · cobre RF-013 CA-01 a CA-05, FA-01 a FA-03, RN-01 a RN-04 · DP: DP-02, DP-03, DP-04, DP-05, DP-07 · Execução: Manual (log da IDE, curl ou Postman) · card HU-016
+Nível M · P2 · roteiro em [07](07%20Testes%20manuais.md) · cobre RF-013 CA-01 a CA-05, CA-10, FA-01 a FA-04, RN-01 a RN-04, RN-08, RN-09 · DP: DP-02, DP-03, DP-04, DP-05, DP-07, decididas em 2026-10-06 · Execução: Manual (log da IDE, curl ou Postman) · card HU-016
 ```text
 Dado a aplicação rodando pela IDE e os Clientes A e B cadastrados
 Quando faço GET /clients/1 com a chave do A (200), sem chave (401), com a chave do A em /clients/2 (403), GET /clients/999 com a chave de administrador (404) e uma busca com question vazia (400)
@@ -1030,10 +1032,10 @@ E abrir o Swagger UI não gera linhas de requisição
 ```
 
 ### CT-150 — Nenhuma chave, pergunta ou nome de arquivo no console da IDE
-Nível M · **P1** · roteiro em [07](07%20Testes%20manuais.md) · cobre RF-013 CA-06, CA-07, RN-05, RN-06 · DP: DP-06 (o que fica fora) · Execução: Manual (log da IDE, curl ou Postman) · card HU-016
+Nível M · **P1** · roteiro em [07](07%20Testes%20manuais.md) · cobre RF-013 CA-06, CA-07, RN-05, RN-06 · DP: DP-06 (o que fica fora), decidida em 2026-10-06 · Execução: Manual (log da IDE, curl ou Postman) · card HU-016
 ```text
 Dado a aplicação rodando pela IDE com a OPENAI_API_KEY real
 Quando o Cliente A faz upload, busca e /ask, há uma chamada com chave inválida e uma GET /clients/1?token=segredo-na-query
-Então a busca no console (Ctrl+F) não encontra a chave do Cliente A, a de administrador, a chave inválida, a OPENAI_API_KEY, a DB_PASSWORD, o texto da pergunta, o nome do arquivo nem segredo-na-query
+Então a busca no console (Ctrl+F) não encontra a chave do Cliente A, a de administrador, a chave inválida, a OPENAI_API_KEY, a DB_PASSWORD, o texto da pergunta, o nome do arquivo, segredo-na-query nem o User-Agent enviado
 E as linhas de requisição dessas chamadas estão lá, com endpoint sem query string
 ```

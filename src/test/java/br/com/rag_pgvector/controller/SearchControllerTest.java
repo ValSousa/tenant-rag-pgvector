@@ -74,8 +74,6 @@ class SearchControllerTest extends WebSliceTest {
 			verify(searchService, never()).search(anyLong(), any(), any());
 		}
 		else {
-			// O padrão (5 quando ausente) é aplicado no SearchService (SearchServiceTest): o controller repassa o
-			// valor recebido
 			verify(searchService).search(CLIENTE_A, PERGUNTA, valor == null ? null : Integer.valueOf(valor));
 		}
 	}

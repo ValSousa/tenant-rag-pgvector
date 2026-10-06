@@ -15,11 +15,14 @@ import org.testcontainers.utility.MountableFile;
 @TestConfiguration(proxyBeanMethods = false)
 public class PostgresTestcontainersConfig {
 
+	public static final String SENHA_DO_BANCO = "senha-db-log-it";
+
 	@Bean
 	@ServiceConnection
 	PostgreSQLContainer postgresContainer() {
 		return new PostgreSQLContainer(
 				DockerImageName.parse("pgvector/pgvector:pg17").asCompatibleSubstituteFor("postgres"))
+				.withPassword(SENHA_DO_BANCO)
 				.withCopyFileToContainer(MountableFile.forClasspathResource("docker/init.sql"),
 						"/docker-entrypoint-initdb.d/init.sql");
 	}

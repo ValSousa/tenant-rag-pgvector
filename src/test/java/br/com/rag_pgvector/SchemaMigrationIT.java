@@ -23,7 +23,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 class SchemaMigrationIT extends AbstractIntegrationTest {
 
-	/** Vetor válido de 768 posições, no formato de texto do pgvector. */
 	private static final String VETOR = "[" + String.join(",", Collections.nCopies(Fixtures.DIMENSAO_EMBEDDING, "0.1")) + "]";
 
 	@Test
