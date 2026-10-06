@@ -1,0 +1,11 @@
+cenario;cliente;pergunta;termosEsperados;tipoFonteEsperado;termosProibidos
+franquia A;A;Qual é o valor da franquia da apólice?;4.000;CONTRACT;5.500|51.000|95.000|22/09/2026|53,7|Ricardo|Honda
+danos A;A;Quais danos foram identificados na vistoria?;porta dianteira|porta traseira|para-lama|roda|suspensão|longarina|painel lateral|pintura;INSPECTION;5.500|51.000|95.000|22/09/2026|53,7|Ricardo|Honda
+data sinistro A;A;Quando ocorreu o sinistro?;18/09/2026;CLAIM;5.500|51.000|95.000|22/09/2026|53,7|Ricardo|Honda
+percentual reparo A;A;O custo estimado do reparo representa qual percentual do valor do veículo?;80%;INSPECTION;5.500|51.000|95.000|22/09/2026|53,7|Ricardo|Honda
+perda total A;A;O sinistro pode ser considerado perda total segundo as regras da apólice?;perda total|75%|80%;CONTRACT|INSPECTION;5.500|51.000|95.000|22/09/2026|53,7|Ricardo|Honda
+franquia B;B;Qual é o valor da franquia da apólice?;5.500;CONTRACT;4.000|96.000|120.000|18/09/2026|Paulo|Corolla
+danos B;B;Quais danos foram identificados na vistoria?;para-choque|capô|farol|radiador|condensador|travessa;INSPECTION;4.000|96.000|120.000|18/09/2026|Paulo|Corolla
+data sinistro B;B;Quando ocorreu o sinistro?;22/09/2026;CLAIM;4.000|96.000|120.000|18/09/2026|Paulo|Corolla
+percentual reparo B;B;O custo estimado do reparo representa qual percentual do valor do veículo?;53,7;INSPECTION;4.000|96.000|120.000|18/09/2026|Paulo|Corolla
+perda total B;B;O sinistro pode ser considerado perda total segundo as regras da apólice?;não|70%|53,7;CONTRACT|INSPECTION;4.000|96.000|120.000|18/09/2026|Paulo|Corolla

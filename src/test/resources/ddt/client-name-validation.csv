@@ -1,0 +1,9 @@
+cenario;name;esperado;campoComErro
+nome válido;Cliente A;201;<null>
+nome com 1 caractere;A;201;<null>
+nome com 255 caracteres;<255 a>;201;<null>
+nome com 256 caracteres;<256 a>;400;name
+nome vazio;<vazio>;400;name
+nome só com espaços;<espacos>;400;name
+nome ausente;<null>;400;name
+nome com acentos;Seguradora São João;201;<null>
