@@ -91,6 +91,6 @@ Alta — Faz parte da primeira entrega (pergunta e resposta por cliente): o usu�
 
 ## Status
 
-- Status: Em andamento — card HU-003 Concluído em 2026-10-05 (testes automáticos e manuais OK, revisão aprovada); entra na release v0.1.0 (Planejada).
+- Status: Concluído — entregue na v0.1.0 (Produção, 2026-10-06).
 - Prontidão: pronto para desenvolvimento (ADR-009 aprovada).
 - 2026-10-01: `POST /clients` e `GET /clients/{clientId}` implementados, com chave gerada por `SecureRandom` e só o hash SHA-256 gravado; Swagger UI configurado (T-205). CT-020, CT-021, CT-023 a CT-027 passando ([evidência](../QA/evidencias/execucoes/2026-10-01-rf-003-rf-004.md)). Para os cenários P1 de acesso foram feitas as partes necessárias do RF-009 (filtro de chave, regras de rota, 401/403 em `ProblemDetail`) e do RF-010 (`GlobalExceptionHandler`). Falta a T-303 (matriz `security-matrix.csv`) e o CT-063 do `ApiFlowIT` (T-505, depende do RF-007).

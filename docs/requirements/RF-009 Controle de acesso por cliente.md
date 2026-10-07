@@ -111,7 +111,7 @@ Alta — Faz parte da primeira entrega (pergunta e resposta por cliente): o usu�
 
 ## Status
 
-- Status: Em andamento — card HU-009 Concluído em 2026-10-05 (testes automáticos e manuais OK, revisão aprovada); entra na release v0.1.0 (Planejada).
+- Status: Concluído — entregue na v0.1.0 (Produção, 2026-10-06).
 - Prontidão: pronto para desenvolvimento (ADR-008 aprovada).
 - 2026-10-01: T-203 e T-301 concluídas com o RF-003; T-302 e T-303 em andamento ([evidência](../QA/evidencias/execucoes/2026-10-01-rf-003-rf-004.md)). Achado #1 (Média) da [revisão do RF-003](../revisao/RF-003%20Revisao%20de%20codigo.md): se a consulta da chave no banco falha, a resposta sai 401 em vez de 500 — corrigir antes de fechar.
 - 2026-10-02: achado #1 do RF-003 corrigido e reconferido (revisão do RF-003).

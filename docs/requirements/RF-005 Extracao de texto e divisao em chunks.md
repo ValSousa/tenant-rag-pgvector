@@ -100,6 +100,6 @@ Alta — Faz parte da primeira entrega (pergunta e resposta por cliente): o usu�
 
 ## Status
 
-- Status: Em andamento — card HU-005 Concluído em 2026-10-05 (testes automáticos e manuais OK, revisão aprovada); entra na release v0.1.0 (Planejada).
+- Status: Concluído — entregue na v0.1.0 (Produção, 2026-10-06).
 - Prontidão: pronto para desenvolvimento (ADR-007 aprovada).
 - 2026-10-02: `PdfTextExtractor`, `TextChunker`, `Chunk` e as propriedades de chunking implementados; CT-040 a CT-045 passando ([evidência](../QA/evidencias/execucoes/2026-10-02-rf-005-rf-006.md)). O `PdfTextExtractor` também lê os 6 PDFs de exemplo do RF-011 (CT-100). Aguarda a verificação do QA e a revisão de código.

@@ -13,16 +13,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
 import java.util.stream.Stream;
 
+import br.com.rag_pgvector.logging.RequestLoggingFilter;
 import br.com.rag_pgvector.security.ApiKeyAuthenticationFilter;
+import br.com.rag_pgvector.support.LogCapturado;
 import br.com.rag_pgvector.support.WebSliceTest;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -34,6 +41,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 /**
  * CT-090 a CT-093 (RF-010): mapeamento de exceções para HTTP, formato {@code ProblemDetail}, erro interno sem
  * detalhes técnicos e lista de campos nos erros de validação. Um controller só de teste lança a exceção pedida.
+ * CT-144 (RF-013): o log de erro traz o mesmo trace ID da linha da requisição.
  */
 @Import(GlobalExceptionHandlerTest.ThrowingController.class)
 class GlobalExceptionHandlerTest extends WebSliceTest {
@@ -163,6 +171,27 @@ class GlobalExceptionHandlerTest extends WebSliceTest {
 				.andReturn().getResponse().getContentAsString();
 
 		assertThat(corpo).doesNotContain("SELECT", "Exception", "at br.com.", "FROM client");
+	}
+
+	@Test
+	@ExtendWith(OutputCaptureExtension.class)
+	@DisplayName("CT-144 — Erro 500: o mesmo traceId na linha da requisição e no ERROR do GlobalExceptionHandler")
+	void deveLevarOTraceIdDaRequisicaoAoLogDeErro(CapturedOutput output) throws Exception {
+		ThrowingController.excecao = new IllegalStateException("falha para o log");
+
+		String traceId = mvc.perform(chamarRotaDeTeste())
+				.andExpect(status().isInternalServerError())
+				.andExpect(jsonPath("$.title").value("Erro interno"))
+				.andReturn().getResponse().getHeader(RequestLoggingFilter.TRACE_ID_HEADER);
+
+		List<String> linhas = LogCapturado.linhasDeRequisicao(output);
+		assertThat(linhas).hasSize(1);
+		assertThat(LogCapturado.campo(linhas.getFirst(), "status")).isEqualTo("500");
+		assertThat(LogCapturado.campo(linhas.getFirst(), "traceId")).matches("[0-9a-f]{32}").isEqualTo(traceId);
+		assertThat(output.getAll().lines().filter(linha -> linha.contains("Erro inesperado")))
+				.singleElement(InstanceOfAssertFactories.STRING)
+				.contains("ERROR")
+				.contains("[" + traceId + "]");
 	}
 
 	@Test

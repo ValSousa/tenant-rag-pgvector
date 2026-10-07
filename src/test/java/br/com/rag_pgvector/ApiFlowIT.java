@@ -69,7 +69,6 @@ class ApiFlowIT extends AbstractIntegrationTest {
 	@Test
 	@DisplayName("CT-063 — Cliente sem documentos recebe lista vazia")
 	void clienteSemDocumentosDeveReceberListaVazia() throws Exception {
-		// Outro cliente com documento e chunk: a busca do cliente novo continua vazia (RF-007 FA-03)
 		ClientEntity outro = data.cliente("Cliente B");
 		data.chunks(data.documento(outro, "contrato.pdf", DocumentTypeEnum.CONTRACT),
 				List.of("Franquia de R$ 5.000,00."), List.of(fakeEmbeddings.fixo("franquia")));

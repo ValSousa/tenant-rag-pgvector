@@ -80,7 +80,6 @@ class SecurityConfigTest extends WebSliceTest {
 	@DisplayName("CT-080 — Matriz de acesso por chave e rota (DDT)")
 	void deveAplicarAMatrizDeAcesso(String cenario, String chave, String metodo, String rota, String esperado)
 			throws Exception {
-		// Respostas dos services para as linhas PERMITIDO chegarem ao controller e saírem com 2xx
 		when(clientService.create(anyString())).thenReturn(new ClientCreatedResponseDTO(3L, "Cliente C", "chave-c"));
 		when(documentService.ingest(anyLong(), anyString(), any(), any())).thenReturn(new DocumentResponseDTO(10L,
 				CLIENTE_A, "contrato.pdf", DocumentTypeEnum.CONTRACT, Instant.parse("2026-10-02T12:00:00Z"), 3));
@@ -89,7 +88,6 @@ class SecurityConfigTest extends WebSliceTest {
 				.andReturn().getResponse().getStatus();
 
 		if ("PERMITIDO".equals(esperado)) {
-			// Permitido pela segurança e atendido pelo controller (o swagger-ui.html redireciona para o index)
 			assertThat(status).as(cenario).isBetween(200, 399);
 		}
 		else {

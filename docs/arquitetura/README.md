@@ -34,10 +34,10 @@ Documentação de arquitetura para quem vai implementar o projeto. Ela parte do 
 | [ADR-012](adr/ADR-012%20Testes%20com%20Testcontainers.md) | Testes de integração com Testcontainers e embeddings fixos | Aprovada |
 | [ADR-013](adr/ADR-013%20Documentacao%20da%20API%20com%20Swagger.md) | Documentação da API com OpenAPI e Swagger UI | Aprovada |
 | [ADR-014](adr/ADR-014%20Pacote%20validator%20e%20excecoes%20proprias.md) | Pacote `validator` e exceções próprias no lugar de `ResponseStatusException` | Aprovada |
-| [ADR-015](adr/ADR-015%20Log%20por%20requisicao%20com%20filtro%20e%20MDC.md) | Log por requisição com filtro servlet e MDC | Em revisão |
+| [ADR-015](adr/ADR-015%20Log%20por%20requisicao%20com%20filtro%20e%20MDC.md) | Log por requisição com filtro servlet e MDC | Aprovada |
 
-- **Aprovada**: decisão que está no README ou que foi aprovada pelo responsável pelo projeto (ADRs 001 a 013 em 2026-10-01; ADR-014 em 2026-10-05).
-- **Em revisão**: proposta ainda não aprovada; lista alternativas e consequências. Hoje: ADR-015 (log por requisição do RF-013), que também depende das decisões DP-01 a DP-07 do RF-013.
+- **Aprovada**: decisão que está no README ou que foi aprovada pelo responsável pelo projeto (ADRs 001 a 013 em 2026-10-01; ADR-014 em 2026-10-05; ADR-015 em 2026-10-06).
+- **Em revisão**: proposta ainda não aprovada; lista alternativas e consequências. Hoje: nenhuma.
 
 ## Rastreabilidade requisito → arquitetura
 
@@ -55,12 +55,12 @@ Documentação de arquitetura para quem vai implementar o projeto. Ela parte do 
 | RF-010 Tratamento de erros | 02, 05 | ADR-010, ADR-014 |
 | RF-011 Documentos de exemplo | 09 | — |
 | RF-012 Testes de isolamento | 08 | ADR-012 |
-| RF-013 Log de requisições para rastreamento | 01 (escopo), 02 (seção 3.9), 05 (cabeçalho `X-Trace-Id`, proposto), 06 (seção 9), 07 (regra 6), 08 (seção 6.1), 09 (Etapa 8) — tudo proposto, aguardando aprovação | ADR-015 (em revisão), ADR-008, ADR-010 |
+| RF-013 Log de requisições para rastreamento | 01 (escopo), 02 (seção 3.9), 05 (cabeçalho `X-Trace-Id`), 06 (seção 9), 07 (regra 6), 08 (seção 6.1), 09 (Etapa 8, pronta para desenvolvimento) | ADR-015, ADR-008, ADR-010 |
 
 ## Decisões que ainda dependem de você
 
 A lista do que aguarda aprovação manual fica em [Aprovacoes pendentes.md](Aprovacoes%20pendentes.md) (arquivo, descrição e status).
 
-As ADRs 001 a 014 estão aprovadas. A ADR-015 (log por requisição, RF-013) está em revisão, junto com as decisões DP-01 a DP-07 do RF-013; a Etapa 8 do [plano](09%20Plano%20de%20implementacao.md) só começa depois dessas aprovações, e o usuário pediu que o desenvolvimento fique para outro momento.
+Nenhuma aprovação pendente. As ADRs 001 a 015 estão aprovadas; a ADR-015 (log por requisição, RF-013) e as decisões DP-01 a DP-07 do RF-013 foram aprovadas em 2026-10-06, e a Etapa 8 do [plano](09%20Plano%20de%20implementacao.md) está pronta para desenvolvimento.
 
 A decisão de conteúdo que faltava (RF-008 DP-06) foi tomada em 2026-10-02: a resposta gerada entra na primeira entrega. O texto dos documentos de exemplo (RF-011 DP-01) foi decidido em 2026-10-02: escrito pelo usuário.

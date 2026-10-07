@@ -80,7 +80,6 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	private Optional<Authentication> authenticate(String apiKey) {
-		// Comparação em tempo constante
 		if (MessageDigest.isEqual(adminApiKey, apiKey.getBytes(StandardCharsets.UTF_8))) {
 			return Optional.of(UsernamePasswordAuthenticationToken.authenticated("admin", null,
 					List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));

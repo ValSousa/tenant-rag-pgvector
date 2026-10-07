@@ -90,7 +90,6 @@ class AnswerControllerTest extends WebSliceTest {
 			verify(answerService, never()).answer(anyLong(), any(), any());
 		}
 		else {
-			// O padrão do /ask (8 quando ausente) é aplicado no AnswerService (CT-073): o controller repassa o valor
 			verify(answerService).answer(CLIENTE_A, PERGUNTA, valor == null ? null : Integer.valueOf(valor));
 		}
 	}

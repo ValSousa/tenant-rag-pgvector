@@ -124,7 +124,6 @@ class TenantIsolationIT extends AbstractIntegrationTest {
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
 
-		// Prompt que chegou ao modelo: uma chamada, com os 8 trechos (topK padrão do /ask) só do Cliente A
 		assertThat(fakeChat.mensagensDoUsuario()).hasSize(1);
 		String prompt = fakeChat.mensagensDoUsuario().getFirst();
 		List<String> trechos = prompt.lines().filter(linha -> linha.matches("^\\[\\d+] .*")).toList();
@@ -134,14 +133,12 @@ class TenantIsolationIT extends AbstractIntegrationTest {
 				.doesNotContain("Cliente B")
 				.doesNotContain("5.000,00")
 				.doesNotContain("contrato-b.pdf");
-		// Fontes devolvidas: todas de documentos do Cliente A, conferidas no banco
 		List<Integer> documentos = JsonPath.read(resposta, "$.sources[*].documentId");
 		assertThat(documentos).hasSize(8).allMatch(id -> jdbc.queryForObject(
 				"SELECT client_id FROM document WHERE id = ?", Long.class, id).equals(clienteA.getId()));
 		assertThat(JsonPath.<String>read(resposta, "$.answer")).isEqualTo(FakeChatModel.RESPOSTA);
 	}
 
-	/** Grava um documento do cliente com {@code quantidade} chunks, todos com o vetor fixo do rótulo. */
 	private void chunks(ClientEntity cliente, String rotulo, int quantidade) {
 		DocumentEntity documento = data.documento(cliente, rotulo + "-" + cliente.getName() + ".pdf",
 				DocumentTypeEnum.CONTRACT);
@@ -170,7 +167,6 @@ class TenantIsolationIT extends AbstractIntegrationTest {
 		return new Resultado(textos, donos);
 	}
 
-	/** Textos dos resultados e o {@code client_id} gravado de cada um, na ordem da resposta. */
 	private record Resultado(List<String> textos, List<Long> donos) {
 	}
 

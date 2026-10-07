@@ -211,7 +211,7 @@ app.rag.max-top-k=20
 # Segurança
 app.security.admin-api-key=${ADMIN_API_KEY}
 
-# Log por requisição (ADR-015, em revisão — entra só quando o RF-013 for implementado; seção 9)
+# Log por requisição (ADR-015 — entra quando o RF-013 for implementado; seção 9)
 app.logging.environment=${APP_ENVIRONMENT:local}
 logging.pattern.correlation=[%X{traceId:-}] 
 ```
@@ -254,16 +254,16 @@ export ADMIN_API_KEY=minha-chave-local     # PowerShell: $env:ADMIN_API_KEY="min
 ./mvnw test                                # precisa de Docker (Testcontainers), não precisa de OPENAI_API_KEY
 ```
 
-## 9. Log por requisição (ADR-015, em revisão)
+## 9. Log por requisição (ADR-015)
 
-Proposta para o RF-013; os valores abaixo seguem as recomendações da ADR-015 e mudam conforme as decisões DP-02 a DP-07 ([Aprovacoes pendentes.md](Aprovacoes%20pendentes.md)). Nenhuma dependência nova: SLF4J, Logback e MDC vêm com o `spring-boot-starter-webmvc`.
+Para o RF-013 (Etapa 8 do plano); os valores abaixo seguem as decisões DP-02 a DP-07 do RF-013, aprovadas em 2026-10-06 com as recomendações da ADR-015. Nenhuma dependência nova: SLF4J, Logback e MDC vêm com o `spring-boot-starter-webmvc`.
 
-| Propriedade | Valor proposto | Para quê |
+| Propriedade | Valor | Para quê |
 |---|---|---|
 | `app.logging.environment` | `${APP_ENVIRONMENT:local}` | Campo `environment` da linha de requisição (DP-04). Lida pelo `RequestLoggingFilter` com `@Value`. |
 | `spring.application.name` (já existe) | `tenant-rag-pgvector` | Campo `service` (DP-04). |
 | `logging.pattern.correlation` | `[%X{traceId:-}] ` (com o espaço final) | Põe o trace ID do MDC no padrão de console do Spring Boot (`${LOG_CORRELATION_PATTERN}` do `defaults.xml`), em **todas** as linhas da requisição, inclusive o `log.error` do `GlobalExceptionHandler` (DP-03). Fora de uma requisição o valor sai vazio (`[]`). |
-| `logging.structured.format.console` | não definida (texto) | Só se a DP-02 escolher JSON: `ecs` ou `logstash`. O MDC (`traceId`) vira campo do JSON e a mensagem chave=valor continua no campo `message`. |
+| `logging.structured.format.console` | não definida (texto, DP-02) | Só se um dia o formato passar a JSON: `ecs` ou `logstash`. O MDC (`traceId`) vira campo do JSON e a mensagem chave=valor continua no campo `message`. |
 
 Conferido no `spring-boot-4.1.1.jar` (repositório Maven local): `logging.pattern.correlation` e `logging.structured.format.console` existem nos metadados de configuração, e o `defaults.xml` do Logback usa `${LOG_CORRELATION_PATTERN:-}` no padrão de console e de arquivo. A ordem `-100` da cadeia do Spring Security (`spring.security.filter.order`) foi conferida no `spring-boot-security-4.1.1.jar`.
 

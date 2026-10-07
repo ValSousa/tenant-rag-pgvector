@@ -56,7 +56,7 @@ Configuração do Spring Security 7: `csrf` desabilitado (API stateless sem cook
 3. `AnswerService` não acessa repository: usa apenas o resultado do `SearchService`.
 4. Só o `ChunkRepository` injeta o `EmbeddingStore`. O `RagAssistant` (AiServices) não recebe `ContentRetriever`; ele nunca busca chunks sozinho.
 5. Mensagens de erro não dizem se outro cliente existe nem quantos documentos tem.
-6. Logs registram `clientId`, nunca conteúdo de chunk nem pergunta completa em nível acima de `DEBUG`. Nenhum log, de nenhum nível, registra a chave de API (`X-API-Key`), `ADMIN_API_KEY`, `OPENAI_API_KEY`, a senha do banco nem o hash das chaves; o log por requisição proposto na ADR-015 (em revisão) só escreve campos fixos e não lê cabeçalhos nem corpo ([06](06%20Integracoes%20e%20configuracao.md), seção 9, lista as configurações de log proibidas em arquivo versionado).
+6. Logs registram `clientId`, nunca conteúdo de chunk nem pergunta completa em nível acima de `DEBUG`. Nenhum log, de nenhum nível, registra a chave de API (`X-API-Key`), `ADMIN_API_KEY`, `OPENAI_API_KEY`, a senha do banco nem o hash das chaves; o log por requisição da ADR-015 só escreve campos fixos e não lê cabeçalhos nem corpo ([06](06%20Integracoes%20e%20configuracao.md), seção 9, lista as configurações de log proibidas em arquivo versionado).
 
 ## 4. Riscos conhecidos
 

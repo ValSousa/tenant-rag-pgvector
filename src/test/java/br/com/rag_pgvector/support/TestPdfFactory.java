@@ -22,7 +22,6 @@ import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
  */
 public final class TestPdfFactory {
 
-	/** Frase repetida por {@link #comTamanho(int)}. */
 	public static final String FRASE = "A franquia da apólice para colisão é de R$ 3.500,00 por evento. ";
 
 	private static final float FONT_SIZE = 11f;
@@ -32,7 +31,6 @@ public final class TestPdfFactory {
 	private TestPdfFactory() {
 	}
 
-	/** PDF com os parágrafos dados, quebrados em linhas e páginas. */
 	public static byte[] comTexto(String... paragrafos) {
 		try (PDDocument document = new PDDocument()) {
 			PDType1Font font = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
@@ -57,7 +55,6 @@ public final class TestPdfFactory {
 		}
 	}
 
-	/** PDF com {@link #FRASE} repetida até ter exatamente {@code caracteres} caracteres de texto. */
 	public static byte[] comTamanho(int caracteres) {
 		return comTexto(textoComTamanho(caracteres));
 	}
@@ -66,7 +63,6 @@ public final class TestPdfFactory {
 		return FRASE.repeat(caracteres / FRASE.length() + 1).substring(0, caracteres);
 	}
 
-	/** PDF válido com uma página em branco (como uma imagem escaneada, sem texto extraível). */
 	public static byte[] semTexto() {
 		try (PDDocument document = new PDDocument()) {
 			document.addPage(new PDPage(PDRectangle.A4));
@@ -77,7 +73,6 @@ public final class TestPdfFactory {
 		}
 	}
 
-	/** Bytes que começam com {@code %PDF} mas não formam um PDF. */
 	public static byte[] corrompido() {
 		byte[] lixo = new byte[2048];
 		new SplittableRandom(42).nextBytes(lixo);
@@ -86,12 +81,10 @@ public final class TestPdfFactory {
 		return lixo;
 	}
 
-	/** Arquivo de 0 bytes. */
 	public static byte[] vazio() {
 		return new byte[0];
 	}
 
-	/** Arquivo de {@code tamanho} bytes que começa com {@code %PDF} e não é um PDF (teste de limite de upload). */
 	public static byte[] arquivoDeTamanho(int tamanho) {
 		byte[] bytes = new byte[tamanho];
 		Arrays.fill(bytes, (byte) 'a');
@@ -114,7 +107,6 @@ public final class TestPdfFactory {
 				linhas.add(linha.toString());
 				linha.setLength(0);
 			}
-			// Palavra maior que a linha: quebra por caractere
 			String resto = palavra;
 			while (largura(resto, font) > width) {
 				int corte = resto.length() - 1;

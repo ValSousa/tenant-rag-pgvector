@@ -79,7 +79,7 @@ Montagem: Cliente A e Cliente B, cada um com um documento; vetores fixos.
 | `DocumentFileValidator` (unitário, sem Spring) | arquivo vazio, nome ausente, nome com 256 caracteres, arquivo que não é PDF → `InvalidFileException` com a mensagem de [02](02%20Componentes%20e%20camadas.md), seção 3.2.1; PDF só pelo content-type ou só pela extensão → aceito; caminho no nome → devolve só o nome do arquivo (ADR-014) |
 | `GlobalExceptionHandler` | 400 (inclusive `InvalidFileException`), 404, 413, 422, 503, 500 no formato `ProblemDetail`, sem stack trace |
 
-### 6.1 Log por requisição (ADR-015, em revisão)
+### 6.1 Log por requisição (ADR-015)
 
 Para quando o RF-013 for implementado; os cenários `CT-xxx` ficam a cargo do analista de QA. O log é lido com o `OutputCaptureExtension` do Spring Boot (`org.springframework.boot.test.system`, no `spring-boot-test-4.1.1.jar` que já está no projeto): `@ExtendWith(OutputCaptureExtension.class)` e um parâmetro `CapturedOutput output` no teste. O `ConsoleAppender` do Logback escreve em `System.out` a cada linha, então a captura pega o log do contexto Spring. Nada chama a OpenAI: o `FakeEmbeddingModel` e o `FakeChatModel` continuam valendo. Sem dependência nova.
 
@@ -93,7 +93,7 @@ Cuidados:
 
 - O teste de segredos precisa de valores que não apareçam por acaso no log. A senha padrão do contêiner Testcontainers é curta e genérica; o QA deve usar uma senha distinta no contêiner de teste (ex.: `.withPassword(...)` no `PostgresTestcontainersConfig`) ou checar só os segredos que têm valor distinto.
 - Comparar com `contains`/`doesNotContain` no texto capturado; não depender do formato do prefixo do Logback (data, PID, thread), que muda entre ambientes.
-- Se a DP-02 escolher JSON, os testes passam a ler o campo `message` e o campo `traceId` do JSON; a lógica dos casos não muda.
+- O formato decidido é texto chave=valor (DP-02). Se um dia passar a JSON, os testes passam a ler o campo `message` e o campo `traceId` do JSON; a lógica dos casos não muda.
 
 ## 7. Convenções
 

@@ -2,7 +2,7 @@
 
 Roteiros dos testes que uma **pessoa** executa para ver a funcionalidade funcionando de verdade: Swagger UI, Postman ou `curl`, o console da IDE e o banco local (`psql`). Eles complementam os testes automáticos do `mvnw test`, não os substituem. Cada roteiro é um cenário `CT-xxx` do [catálogo](05%20Cenarios%20de%20teste.md) com execução **Manual** e entra em `testes[]` do card (HU) no dashboard.
 
-Criado em 2026-10-02 pelo QA. Situação em 2026-10-05: executados pela pessoa e `OK` — CT-116 (HU-001), CT-117 e CT-118 (HU-002), CT-119 e CT-120 (HU-003), CT-035 (opt-in) e CT-121 (HU-004), CT-122 e CT-123 (HU-005), CT-124, CT-125, CT-126 e CT-137 (HU-006, este com o limite de 5 MB decidido pelo usuário), CT-127 e CT-128 (HU-007) e CT-075, CT-076 e CT-129 (HU-008; os dois primeiros opt-in, e o CT-075 passou na reexecução, depois de uma falha isolada no caso "perda total A"), CT-130 e CT-131 (HU-009) e CT-134 (HU-011, resultado informado pelo usuário, sem prints). O CT-132 (HU-010) foi executado em parte (falta o passo 4, arquivo que não é PDF). Os demais roteiros seguem `Não iniciada` no `Testes/Testes.json` do dashboard. Evidências em [evidencias/](evidencias/README.md). Os roteiros CT-149 e CT-150 (HU-016, RF-013, log de requisições) foram criados em 2026-10-05, antes da implementação, e só podem ser executados depois dela. Só quem executou pode informar o resultado; o QA então grava a evidência e muda o status (ver "Depois de executar").
+Criado em 2026-10-02 pelo QA. Situação em 2026-10-05: executados pela pessoa e `OK` — CT-116 (HU-001), CT-117 e CT-118 (HU-002), CT-119 e CT-120 (HU-003), CT-035 (opt-in) e CT-121 (HU-004), CT-122 e CT-123 (HU-005), CT-124, CT-125, CT-126 e CT-137 (HU-006, este com o limite de 5 MB decidido pelo usuário), CT-127 e CT-128 (HU-007) e CT-075, CT-076 e CT-129 (HU-008; os dois primeiros opt-in, e o CT-075 passou na reexecução, depois de uma falha isolada no caso "perda total A"), CT-130 e CT-131 (HU-009) e CT-134 (HU-011, resultado informado pelo usuário, sem prints). O CT-132 (HU-010) foi executado em parte (falta o passo 4, arquivo que não é PDF). Os demais roteiros seguem `Não iniciada` no `Testes/Testes.json` do dashboard. Evidências em [evidencias/](evidencias/README.md). Os roteiros CT-149 e CT-150 (HU-016, RF-013, log de requisições) foram criados em 2026-10-05, antes da implementação, revisados em 2026-10-06 conforme as DP do RF-013 decididas, e só podem ser executados depois dela. Só quem executou pode informar o resultado; o QA então grava a evidência e muda o status (ver "Depois de executar").
 
 ## Resumo por card
 
@@ -20,7 +20,7 @@ Criado em 2026-10-02 pelo QA. Situação em 2026-10-05: executados pela pessoa e
 | HU-010 | RF-010 | CT-132, CT-133 | curl ou Postman; curl + log da IDE + psql |
 | HU-011 | RF-011 | CT-134 | leitor de PDF, curl, psql |
 | HU-012 | RF-012 | CT-135, CT-136 | curl ou Postman; curl ou Swagger UI |
-| HU-016 | RF-013 | CT-149, CT-150 (criados antes da implementação; card Bloqueado) | log da IDE + curl ou Postman |
+| HU-016 | RF-013 | CT-149, CT-150 (criados antes da implementação; card Aguardando) | log da IDE + curl ou Postman |
 
 O CT-003 (RF-001, ambiente com `docker compose`) já era manual e está OK desde 2026-10-01; o CT-116 o repete com o que a aplicação tem hoje (migrations, chaves obrigatórias).
 
@@ -493,14 +493,14 @@ CT-116 → CT-117 → CT-131 → CT-119 → CT-120 → CT-130 → CT-124 → CT-
 
 ## HU-016 / RF-013 — Log de requisições
 
-Criados em 2026-10-05, antes da implementação: o card HU-016 está Bloqueado (aprovação da ADR-015 e das DP-01 a DP-07 do RF-013) e o desenvolvimento fica para outro momento. Só execute depois que o card chegar a Em teste. O resultado esperado segue a recomendação da ADR-015; o que depende de decisão pendente está marcado com a DP e pode mudar depois da decisão do usuário (o QA ajusta o roteiro antes da execução).
+Criados em 2026-10-05, antes da implementação, e revisados em 2026-10-06: o usuário aprovou a ADR-015 e decidiu as DP-01 a DP-07 do RF-013 como a recomendação, e o card HU-016 está Aguardando o desenvolvimento. Só execute depois que o card chegar a Em teste. O resultado esperado segue as DP decididas em 2026-10-06; cada roteiro diz em quais se baseia.
 
 ### CT-149 — Linhas de log das requisições no console da IDE
 
-- **Card / requisito:** HU-016 / RF-013 (CA-01 a CA-05, FA-01 a FA-03, RN-01 a RN-04)
+- **Card / requisito:** HU-016 / RF-013 (CA-01 a CA-05, CA-10, FA-01 a FA-04, RN-01 a RN-04, RN-08, RN-09)
 - **Ferramenta:** log da IDE e `curl` (ou Postman)
 - **Prioridade:** P2
-- **Decisões que afetam o esperado:** DP-02 (formato texto chave=valor; se for JSON, os mesmos campos aparecem como campos do JSON), DP-03 (cabeçalho `X-Trace-Id`), DP-04 (`service`/`environment`), DP-05 (`clientId`), DP-07 (Swagger sem linha e nível)
+- **Decisões em que o esperado se baseia (decididas em 2026-10-06):** DP-02 (formato texto chave=valor), DP-03 (cabeçalho `X-Trace-Id`), DP-04 (`service`/`environment`), DP-05 (`clientId` do caminho, também nas chamadas do administrador), DP-07 (Swagger sem linha e nível pelo status)
 - **Pré-condições:** aplicação rodando pela IDE ([Como executar](../guias/Como%20executar.md)), sem `APP_ENVIRONMENT` definido; Clientes A (id 1) e B (id 2) cadastrados (CT-119); limpe o console da IDE antes do passo 1.
 - **Passos:**
   1. `curl -i http://localhost:8080/clients/1 -H "X-API-Key: $CHAVE_CLIENTE_A"`
@@ -524,16 +524,16 @@ Criados em 2026-10-05, antes da implementação: o card HU-016 está Bloqueado (
 - **Card / requisito:** HU-016 / RF-013 (CA-06, CA-07, RN-05, RN-06)
 - **Ferramenta:** log da IDE e `curl` (ou Postman)
 - **Prioridade:** P1 (segurança: segredos fora do log)
-- **Decisões que afetam o esperado:** DP-06 (pergunta, texto e nome do arquivo, nome do cliente e query string fora do log). Chaves, hash e senha ficam fora em qualquer decisão (RN-05).
+- **Decisões em que o esperado se baseia (decidida em 2026-10-06):** DP-06 (pergunta, texto e nome do arquivo, nome do cliente, query string, cabeçalhos, IP e User-Agent fora do log). Chaves, hash e senha nunca entram (RN-05).
 - **Pré-condições:** aplicação rodando pela IDE com a `OPENAI_API_KEY` real (o upload e o `/ask` gastam alguns tokens); Cliente A cadastrado; limpe o console da IDE antes do passo 1. Tenha à mão (sem colar na evidência) os valores de `CHAVE_CLIENTE_A`, `ADMIN_API_KEY`, `OPENAI_API_KEY` e `DB_PASSWORD` do `.env`.
 - **Passos:**
   1. Upload: `curl -i -X POST http://localhost:8080/clients/1/documents -H "X-API-Key: $CHAVE_CLIENTE_A" -F "file=@documents/cliente-a/vistoria.pdf;type=application/pdf" -F "documentType=INSPECTION"` (substitui a vistoria do Cliente A pelo mesmo arquivo).
-  2. Busca: `curl -i -X POST http://localhost:8080/clients/1/search -H "X-API-Key: $CHAVE_CLIENTE_A" -H "Content-Type: application/json" -d '{"question": "Quais danos foram identificados na vistoria?"}'`
+  2. Busca: `curl -i -X POST http://localhost:8080/clients/1/search -H "X-API-Key: $CHAVE_CLIENTE_A" -H "User-Agent: AgenteRastreioManual" -H "Content-Type: application/json" -d '{"question": "Quais danos foram identificados na vistoria?"}'`
   3. Pergunta: o mesmo corpo em `/clients/1/ask`.
   4. Chave inválida: `curl -i http://localhost:8080/clients/1 -H "X-API-Key: chave-invalida-manual"`
   5. Administrador: `curl -i http://localhost:8080/clients/1 -H "X-API-Key: $CHAVE_ADMIN"`
   6. Query string: `curl -i "http://localhost:8080/clients/1?token=segredo-na-query" -H "X-API-Key: $CHAVE_CLIENTE_A"`
-  7. No console da IDE, use a busca (Ctrl+F) para cada valor: a chave do Cliente A, a `ADMIN_API_KEY`, `chave-invalida-manual`, a `OPENAI_API_KEY` (procure também só o começo, ex.: os 10 primeiros caracteres), a `DB_PASSWORD`, `danos foram identificados`, `vistoria.pdf`, `Cliente A` (nome do cliente) e `segredo-na-query`.
+  7. No console da IDE, use a busca (Ctrl+F) para cada valor: a chave do Cliente A, a `ADMIN_API_KEY`, `chave-invalida-manual`, a `OPENAI_API_KEY` (procure também só o começo, ex.: os 10 primeiros caracteres), a `DB_PASSWORD`, `danos foram identificados`, `vistoria.pdf`, `Cliente A` (nome do cliente), `segredo-na-query` e `AgenteRastreioManual`.
 - **Resultado esperado:** passos 1 a 6 geram uma linha do `RequestLoggingFilter` cada (`201`, `200`, `200`, `401`, `200`, `200`); a do passo 6 tem `endpoint=/clients/1`, sem `?token=`. Passo 7: nenhuma das buscas encontra resultado no console (os valores secretos não aparecem em nenhuma linha, de nenhum nível, inclusive no log de inicialização).
 - **Evidência a anexar:** trecho do console com as seis linhas de requisição e uma anotação com a lista de valores procurados e "0 ocorrências" para cada um (sem colar os valores secretos; escreva o nome da variável).
 

@@ -40,7 +40,6 @@ public abstract class WebSliceTest {
 	@Autowired
 	protected MockMvc mvc;
 
-	/** Usado pelo filtro de chave para resolver a chave do cliente. */
 	@MockitoBean
 	protected ClientRepository clientRepository;
 

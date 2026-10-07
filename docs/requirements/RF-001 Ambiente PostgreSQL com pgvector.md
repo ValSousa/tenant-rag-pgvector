@@ -103,6 +103,6 @@ Alta — Faz parte da primeira entrega (pergunta e resposta por cliente): o usu�
 
 ## Status
 
-- Status: Em andamento — card HU-001 Concluído em 2026-10-05 (testes automáticos e manuais OK, revisão aprovada); entra na release v0.1.0 (Planejada).
+- Status: Concluído — entregue na v0.1.0 (Produção, 2026-10-06).
 - Prontidão: implementado em 2026-10-01 (T-101, T-102, T-103); CT-001, CT-002 e CT-003 OK. Falta a revisão; a etapa 1 fecha com o RF-002.
 - 2026-10-01: T-103 concluída com o `application-test.properties` (RF-004); CT-001 e CT-002 continuam passando ([evidência](../QA/evidencias/execucoes/2026-10-01-rf-003-rf-004.md)). Revisão de código feita ([RF-001 Revisao de codigo](../revisao/RF-001%20Revisao%20de%20codigo.md)); os 6 achados estão corrigidos.

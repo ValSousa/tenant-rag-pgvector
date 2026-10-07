@@ -34,7 +34,6 @@ public class SearchController {
 	@ApiResponse(responseCode = "403", description = "Chave de outro cliente")
 	@ApiResponse(responseCode = "503", description = "Serviço de IA indisponível")
 	public SearchResponseDTO search(@PathVariable long clientId, @Valid @RequestBody SearchRequestDTO request) {
-		// O cliente vem sempre do caminho, já autorizado pelo SecurityConfig
 		return searchService.search(clientId, request.question(), request.topK());
 	}
 

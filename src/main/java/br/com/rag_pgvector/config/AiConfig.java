@@ -21,14 +21,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 
 /**
- * Beans do LangChain4j montados à mão, sem starters (ADR-005): modelo de embeddings, store vetorial e, para a resposta
+ * Beans do LangChain4j montados à mão, sem starters: modelo de embeddings, store vetorial e, para a resposta
  * do {@code /ask}, o modelo de chat e o {@link RagAssistant}.
  */
 @Configuration
 @EnableConfigurationProperties({OpenAiProperties.class, RagProperties.class})
 public class AiConfig {
 
-	/** Tabela do store, criada pela migration V1 (ADR-004). */
+	/** Tabela do store, criada pela migration. */
 	static final String CHUNK_TABLE = "document_chunk";
 
 	/**
@@ -51,7 +51,7 @@ public class AiConfig {
 				.build();
 	}
 
-	/** Modelo que gera a resposta (ADR-006): {@code gpt-4o-mini} com temperatura baixa, ambos configuráveis. */
+	/** Modelo que gera a resposta: {@code gpt-4o-mini} com temperatura baixa, ambos configuráveis. */
 	@Bean
 	ChatModel chatModel(OpenAiProperties openAi) {
 		return OpenAiChatModel.builder()

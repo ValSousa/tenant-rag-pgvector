@@ -64,6 +64,7 @@ As variáveis (no `.env` ou no ambiente):
 | `DB_USER` | Sim | nenhum | Usuário do banco (também cria o usuário no `docker compose`) |
 | `DB_PASSWORD` | Sim | nenhum | Senha do banco (idem) |
 | `SWAGGER_ENABLED` | Não | `true` | `false` desliga o Swagger UI e o `/v3/api-docs` |
+| `APP_ENVIRONMENT` | Não | `local` | Valor do campo `environment` na linha de log de cada requisição (ver seção 4) |
 
 O `src/main/resources/application.properties` é versionado e serve de exemplo: ele **não** tem senhas nem chaves, só referências a variáveis de ambiente. Alternativa ao `.env`: crie o `src/main/resources/application-dev.properties` (fora do git, ver seção de perfis) com o usuário e a senha do `docker-compose.yml` e rode com o perfil `dev`; assim só as duas chaves precisam estar no ambiente:
 
@@ -159,6 +160,20 @@ Could not resolve placeholder 'OPENAI_API_KEY' in value "${OPENAI_API_KEY}"
 Preencha as duas no `.env` (ou defina-as no terminal) e rode de novo. Com `OPENAI_API_KEY=` vazio no `.env`, a falha é na validação de `app.openai.api-key` (não pode estar em branco).
 
 Se o erro for `password authentication failed for user "${DB_USER}"`, faltam `DB_USER`/`DB_PASSWORD`: o Spring envia o texto do placeholder como usuário. Confira o `.env` e se a aplicação está rodando da pasta do projeto.
+
+### Log das requisições
+
+Cada requisição à API gera uma linha no console (ADR-015), escrita pelo `RequestLoggingFilter`:
+
+```text
+2026-10-06T11:42:24.932-03:00  INFO 52492 --- [tenant-rag-pgvector] [nio-8080-exec-1] [4575e7774b654d969014e2402930f20e] b.c.r.logging.RequestLoggingFilter       : service=tenant-rag-pgvector environment=local method=GET endpoint=/clients/1 status=200 clientId=1 traceId=4575e7774b654d969014e2402930f20e duration=12ms
+```
+
+- Nível pelo status: `INFO` abaixo de 400, `WARN` para 4xx (inclusive os 401/403 da segurança) e `ERROR` para 5xx.
+- `endpoint` é o caminho sem a query string; `clientId` é o número de `/clients/{clientId}` ou `-` (ex.: `POST /clients`); `duration` em milissegundos.
+- O trace ID (32 caracteres hexadecimais, novo a cada requisição) aparece entre colchetes em **todas** as linhas de log daquela requisição, inclusive no `ERROR` do `GlobalExceptionHandler`, e volta para quem chamou no cabeçalho de resposta `X-Trace-Id`. Para investigar uma chamada, copie o `X-Trace-Id` da resposta e procure-o no console (Ctrl+F).
+- Swagger UI e `/v3/api-docs` não geram linha.
+- O log nunca traz cabeçalhos (`X-API-Key`), corpo, pergunta, nome do arquivo, query string, IP nem User-Agent. Não ligue `DEBUG`/`TRACE` de `org.springframework.web`, `org.springframework.security` ou `org.hibernate.orm.jdbc.bind` em arquivo versionado: eles registrariam a chave ou o hash dela.
 
 ## 5. Perfis
 

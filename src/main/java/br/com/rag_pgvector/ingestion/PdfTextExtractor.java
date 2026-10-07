@@ -29,7 +29,6 @@ public class PdfTextExtractor {
 			throw new InvalidDocumentException(NO_EXTRACTABLE_TEXT, ex);
 		}
 		catch (RuntimeException ex) {
-			// O parser embrulha a IOException do PDFBox (arquivo vazio, corrompido ou que não é PDF)
 			throw new InvalidDocumentException(UNREADABLE_PDF, ex);
 		}
 		String text = document.text();

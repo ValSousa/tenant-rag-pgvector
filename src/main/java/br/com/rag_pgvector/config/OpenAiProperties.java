@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Configuração da OpenAI (ADR-006). A chave vem de {@code OPENAI_API_KEY}, nunca do repositório.
+ * Configuração da OpenAI. A chave vem de {@code OPENAI_API_KEY}, nunca do repositório.
  * {@code chatModel} e {@code temperature} são do modelo que gera a resposta do {@code /ask}.
  */
 @Validated

@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Metadados da API e esquema de segurança {@code apiKey} para o botão Authorize do Swagger UI (ADR-013).
+ * Metadados da API e esquema de segurança {@code apiKey} para o botão Authorize do Swagger UI.
  */
 @Configuration
 @OpenAPIDefinition(

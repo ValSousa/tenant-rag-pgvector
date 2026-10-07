@@ -38,7 +38,6 @@ public class TestDataBuilder {
 		return clientRepository.save(new ClientEntity(nome, hashAleatorio(), Instant.now()));
 	}
 
-	/** Cliente que autentica com a chave em texto dada (ex.: {@link Fixtures#CHAVE_A}). */
 	public ClientEntity cliente(String nome, String chave) {
 		return clientRepository.save(new ClientEntity(nome, ApiKeyHasher.hash(chave), Instant.now()));
 	}
@@ -47,13 +46,11 @@ public class TestDataBuilder {
 		return documentRepository.save(new DocumentEntity(cliente, fileName, documentType, Instant.now()));
 	}
 
-	/** Grava os chunks do documento pelo {@link ChunkRepository}, com índices 0..n-1 na ordem dos textos. */
 	public void chunks(DocumentEntity documento, List<String> textos, List<Embedding> vetores) {
 		List<Chunk> chunks = IntStream.range(0, textos.size()).mapToObj(i -> new Chunk(i, textos.get(i))).toList();
 		chunkRepository.saveAll(documento.getClient().getId(), documento, chunks, vetores);
 	}
 
-	/** 64 caracteres hexadecimais, o formato de um SHA-256, sem colidir com a uk_client_api_key_hash. */
 	private static String hashAleatorio() {
 		return (UUID.randomUUID().toString() + UUID.randomUUID()).replace("-", "");
 	}

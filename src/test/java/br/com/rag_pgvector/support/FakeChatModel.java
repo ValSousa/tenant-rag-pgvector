@@ -32,7 +32,6 @@ public class FakeChatModel implements ChatModel {
 		return ChatResponse.builder().aiMessage(AiMessage.from(RESPOSTA)).build();
 	}
 
-	/** A próxima chamada lança a exceção. */
 	public synchronized void falharNaProxima(RuntimeException falha) {
 		proximaFalha = falha;
 	}
@@ -41,7 +40,6 @@ public class FakeChatModel implements ChatModel {
 		return List.copyOf(requisicoes);
 	}
 
-	/** Texto da mensagem do usuário (trechos + pergunta) de cada chamada, na ordem. */
 	public synchronized List<String> mensagensDoUsuario() {
 		return requisicoes.stream()
 				.flatMap(requisicao -> requisicao.messages().stream())

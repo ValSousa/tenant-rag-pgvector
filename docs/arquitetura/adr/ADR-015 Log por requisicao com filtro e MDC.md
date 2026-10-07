@@ -1,7 +1,7 @@
 # ADR-015 — Log por requisição com filtro servlet e MDC
 
-- **Status:** Em revisão — depende das decisões do responsável pelo projeto sobre o RF-013 (DP-01 a DP-07, seção "Pontos para aprovação") e da aprovação desta ADR. Nada é implementado antes disso.
-- **Data:** 2026-10-05
+- **Status:** Aprovada (2026-10-06) — o responsável pelo projeto aprovou esta ADR e todas as recomendações para as DP-01 a DP-07 do RF-013, sem mudanças (seção "Decisões do responsável")
+- **Data:** 2026-10-05 (proposta); 2026-10-06 (aprovação)
 - **Requisitos:** RF-013 (log de requisições para rastreamento); relaciona-se com RF-009 (401/403 da segurança) e RF-010 (log de erro do `GlobalExceptionHandler`); complementa a ADR-008 e a ADR-010
 
 ## Contexto
@@ -19,7 +19,7 @@ Hoje:
 
 1. **Escopo.** O log básico por requisição (uma linha por chamada + trace ID no log da aplicação) entra no escopo. Métricas, tracing distribuído, propagação de contexto entre serviços, exportação para ferramentas externas e painéis continuam fora ("observabilidade avançada").
 2. **Um filtro servlet antes do Spring Security.** Novo pacote `br.com.rag_pgvector.logging` com `RequestLoggingFilter extends OncePerRequestFilter`, `@Component` com `@Order(Ordered.HIGHEST_PRECEDENCE + 10)`, isto é, antes da cadeia do Spring Security (`-100`). Por envolver a cadeia inteira, ele vê o `status` final de toda resposta: 2xx, 401/403 da segurança, 4xx/5xx do `GlobalExceptionHandler` e 413 do multipart. Se uma exceção escapar da cadeia, registra `status=500` e relança.
-3. **Trace ID no MDC.** No início da requisição o filtro gera o trace ID (`UUID` aleatório sem hífens, 32 caracteres hexadecimais), coloca em `MDC.put("traceId", ...)` e remove no `finally`. A propriedade `logging.pattern.correlation=[%X{traceId:-}] ` faz o padrão de console do Spring Boot mostrar o trace ID em **todas** as linhas de log da requisição, inclusive o `log.error` do `GlobalExceptionHandler`, sem alterar essa classe. O nome `traceId` é o mesmo que o Micrometer Tracing usa no MDC, então uma adoção futura não muda o padrão. Origem do trace ID e cabeçalho de resposta: DP-03.
+3. **Trace ID no MDC.** No início da requisição o filtro gera o trace ID (`UUID` aleatório sem hífens, 32 caracteres hexadecimais), coloca em `MDC.put("traceId", ...)` e remove no `finally`. A propriedade `logging.pattern.correlation=[%X{traceId:-}] ` faz o padrão de console do Spring Boot mostrar o trace ID em **todas** as linhas de log da requisição, inclusive o `log.error` do `GlobalExceptionHandler`, sem alterar essa classe. O nome `traceId` é o mesmo que o Micrometer Tracing usa no MDC, então uma adoção futura não muda o padrão. O trace ID é sempre gerado pela aplicação (trace ID vindo de fora não é aceito) e devolvido no cabeçalho de resposta `X-Trace-Id` (DP-03).
 4. **Duração** medida com `System.nanoTime()` no filtro, registrada em milissegundos (`duration=42ms`).
 5. **Linha de log** escrita pelo logger do filtro, só com os campos fixos, montados a partir de valores que o filtro controla:
    `service={} environment={} method={} endpoint={} status={} clientId={} traceId={} duration={}ms`. `timestamp` e `level` vêm do padrão do Logback do Spring Boot. Os dez campos estão sempre presentes (CA-01); valor ausente vira `-` (DP-05).
@@ -28,7 +28,7 @@ Hoje:
    - `clientId`: o número de `/clients/{clientId}` no caminho, lido com uma expressão regular (`^/clients/(\d+)(/.*)?$`), ou `-` (DP-05). Não depende do `SecurityContext`, que o `SecurityContextHolderFilter` já limpou quando o filtro externo registra a linha, e fica disponível também nos 401/403.
    - `service`: `spring.application.name`; `environment`: nova propriedade `app.logging.environment` (DP-04).
    - `level` conforme o `status` (DP-07).
-6. **Formato texto** (chave=valor, como no exemplo do pedido), com o padrão de console padrão do Spring Boot mais a correlação. Se o responsável escolher JSON (DP-02), basta `logging.structured.format.console=ecs` (ou `logstash`): o MDC (`traceId`) vira campo do JSON automaticamente, sem dependência nova e sem mudar o filtro.
+6. **Formato texto** (chave=valor, como no exemplo do pedido), com o padrão de console padrão do Spring Boot mais a correlação (DP-02). Se um dia o formato passar a JSON, basta `logging.structured.format.console=ecs` (ou `logstash`): o MDC (`traceId`) vira campo do JSON automaticamente, sem dependência nova e sem mudar o filtro.
 7. **O que nunca entra no log** (RN-05/RN-06): o filtro não lê nem registra cabeçalhos (`X-API-Key` incluída), corpo de requisição ou resposta, query string, IP ou `User-Agent`. Regras de configuração que acompanham a decisão:
    - não usar `CommonsRequestLoggingFilter` nem `logRequests`/`logResponses` nos builders do LangChain4j (registrariam cabeçalhos ou o conteúdo enviado à OpenAI);
    - não deixar em arquivo versionado níveis `DEBUG`/`TRACE` de `org.springframework.web`, `org.springframework.security`, `org.hibernate.orm.jdbc.bind` (este registraria o `api_key_hash` como parâmetro do SQL) nem de clientes HTTP;
@@ -111,11 +111,13 @@ O `traceId` aparece duas vezes na linha de requisição (prefixo da correlação
 
 `Level` é `org.slf4j.event.Level` e `log.atLevel(...)` é a API fluente do SLF4J 2 (existe desde a 2.0; o Boot 4.1.1 gerencia o `slf4j-api` 2.0.18, conferido no `spring-boot-dependencies-4.1.1.pom`).
 
-## Pontos para aprovação (recomendações; quem decide é o responsável)
+## Decisões do responsável (2026-10-06)
 
-| DP do RF-013 | Recomendação técnica | Por quê |
+O responsável pelo projeto aprovou em 2026-10-06 todas as recomendações abaixo, sem mudanças. Elas valem como decisão das DP-01 a DP-07 do RF-013 (o registro no requisito fica a cargo do `analista-de-requisitos`).
+
+| DP do RF-013 | Decisão (aprovada em 2026-10-06) | Por quê |
 |---|---|---|
-| DP-01 Prioridade e entrega | Manter **Média** e entregar depois da v0.1.0, como etapa própria (Etapa 8 do [plano](../09%20Plano%20de%20implementacao.md)), sem prazo | Não muda o valor do README; o código é pequeno e independente das outras etapas |
+| DP-01 Prioridade e entrega | Manter **Média** e desenvolver agora, para entrar numa próxima release (depois da v0.1.0), como etapa própria (Etapa 8 do [plano](../09%20Plano%20de%20implementacao.md)) | Não muda o valor do README; o código é pequeno e independente das outras etapas |
 | DP-02 Formato | **Texto chave=valor** (como o exemplo do pedido) | Legível no console da IDE e nos testes manuais; o projeto só roda localmente. JSON fica a uma propriedade de distância (`logging.structured.format.console=ecs`), sem dependência nova |
 | DP-03 Trace ID | **Gerado pela aplicação** a cada requisição (UUID sem hífens); **devolvido** no cabeçalho de resposta `X-Trace-Id`; **presente em todas as linhas** da requisição via MDC + `logging.pattern.correlation`; **não aceitar** trace ID de entrada por enquanto | Gerar sempre é o mais simples e evita validar valor externo (injeção no log). Devolver no cabeçalho permite a quem chamou citar o ID numa investigação. Aceitar `X-Trace-Id`/`traceparent` de entrada só faz sentido com outros serviços na frente (fora do escopo) |
 | DP-04 `service` e `environment` | `service` = `spring.application.name` (`tenant-rag-pgvector`); `environment` = `app.logging.environment=${APP_ENVIRONMENT:local}` | Sem valor fixo no código; o `client-api`/`prod` do pedido é exemplo. Valor padrão `local` porque o projeto só roda na máquina do desenvolvedor |
@@ -123,7 +125,7 @@ O `traceId` aparece duas vezes na linha de requisição (prefixo da correlação
 | DP-06 O que fica fora | Fora: corpo da requisição e da resposta, pergunta do `/ask` e do `/search`, texto e nome do arquivo, nome do cliente, **query string**, todos os cabeçalhos, IP e `User-Agent` | O filtro registra só os campos fixos; nada vem de entrada livre, exceto o caminho (sem query string) |
 | DP-07 Rotas de apoio e nível | Swagger UI e `/v3/api-docs` **fora** do log; `INFO` para status < 400, `WARN` para 4xx, `ERROR` para 5xx | A página do Swagger carrega vários arquivos estáticos e encheria o log de linhas sem valor. Os níveis separam uso normal, erro de quem chamou e falha da aplicação |
 
-Se alguma DP for decidida de outro jeito, o esboço muda pouco: formato (uma propriedade), trace ID de entrada (ler e validar `X-Trace-Id` com `[A-Za-z0-9-]{1,64}` antes de gerar), `clientId` do principal (o `ApiKeyAuthenticationFilter` grava `MDC.put("clientId", ...)`), níveis (um `switch`).
+Se alguma dessas decisões mudar no futuro, o esboço muda pouco: formato (uma propriedade), trace ID de entrada (ler e validar `X-Trace-Id` com `[A-Za-z0-9-]{1,64}` antes de gerar), `clientId` do principal (o `ApiKeyAuthenticationFilter` grava `MDC.put("clientId", ...)`), níveis (um `switch`).
 
 ## Alternativas consideradas
 
@@ -139,7 +141,7 @@ Se alguma DP for decidida de outro jeito, o esboço muda pouco: formato (uma pro
 
 - Uma classe nova (`logging/RequestLoggingFilter`), um pacote novo, duas propriedades (`app.logging.environment`, `logging.pattern.correlation`), nenhuma dependência nova.
 - Toda linha de log de uma requisição carrega o trace ID, inclusive o erro do `GlobalExceptionHandler`, sem mudar essa classe.
-- A resposta ganha o cabeçalho `X-Trace-Id` (se a DP-03 for aprovada assim); status, corpo e os cabeçalhos que já existem não mudam (CA-08).
+- A resposta ganha o cabeçalho `X-Trace-Id` (DP-03); status, corpo e os cabeçalhos que já existem não mudam (CA-08).
 - Como `@Component` do tipo `Filter`, o filtro entra também nos testes `@WebMvcTest` (o `WebSliceTest` passa a gerar as linhas de log e a precisar da propriedade `app.logging.environment`, que vem do `application.properties`).
 - A garantia de "nenhum segredo no log" depende também da configuração (item 7 da decisão); a revisão de código deve recusar `DEBUG`/`TRACE` desses pacotes em arquivo versionado e `logRequests(true)` no LangChain4j.
 - Custo por requisição desprezível (um UUID, uma expressão regular e uma linha de log).

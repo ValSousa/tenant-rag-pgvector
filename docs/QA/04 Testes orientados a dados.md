@@ -227,7 +227,7 @@ Executado em `SchemaMigrationIT` com `INSERT` direto, para provar o `CHECK` do b
 
 ### 3.11 Log por requisição — CT-139, CT-142 e CT-143 (RF-013, ADR-015)
 
-Criada em 2026-10-05, ainda sem implementação (card HU-016 Bloqueado). Os valores esperados seguem a recomendação da ADR-015 para as DP do RF-013 e podem mudar depois da decisão do usuário: `clientId` (DP-05), `endpoint` sem query string (DP-06), `nivel` e rotas de apoio (DP-07).
+Criada em 2026-10-05, ainda sem implementação (card HU-016 Aguardando). Os valores esperados seguem as DP do RF-013 decididas em 2026-10-06: `clientId` do caminho, também nas chamadas do administrador, e `-` nas rotas sem cliente (DP-05, RN-09), `endpoint` sem query string (DP-06), `nivel` pelo status e rotas de apoio sem linha (DP-07, RN-08, FA-04).
 
 **`request-log-matrix.csv` — CT-143**, consumido por `RequestLoggingWebTest` (web slice). Na massa, `{A}` = 1 e `{B}` = 2, como na `security-matrix.csv`; os services são mockados como no `WebSliceTest` (o 404 vem do `ClientService` mockado lançando `ResourceNotFoundException`), e as linhas `POST` mandam um corpo válido. `naoContem` é um valor que não pode aparecer no texto capturado (`<null>` = sem verificação extra).
 

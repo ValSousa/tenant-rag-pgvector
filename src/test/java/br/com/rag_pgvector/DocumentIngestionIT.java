@@ -114,14 +114,12 @@ class DocumentIngestionIT extends AbstractIntegrationTest {
 				.andExpect(status().isInternalServerError())
 				.andExpect(jsonPath("$.title").value("Erro interno"));
 
-		// O INSERT do documento foi desfeito: o store entrou na transação do JPA (TransactionAwareDataSourceProxy)
 		assertTabelasVazias();
 	}
 
 	@Test
 	@DisplayName("CT-056 — Falha do banco no meio do lote de chunks desfaz o documento e os chunks já gravados")
 	void deveDesfazerTudoQuandoOBancoRecusaUmChunk() throws Exception {
-		// Torna o INSERT do terceiro chunk inválido no banco, depois de dois chunks gravados no mesmo lote
 		jdbc.execute("ALTER TABLE document_chunk ADD CONSTRAINT ck_teste_ct056 CHECK (chunk_index < 2)");
 		try {
 			enviar(CLIENTE_A, CHAVE_A, pdf("contrato.pdf", TestPdfFactory.comTamanho(5000)), "CONTRACT")
@@ -187,7 +185,6 @@ class DocumentIngestionIT extends AbstractIntegrationTest {
 		assertThat(contar("SELECT count(*) FROM document_chunk WHERE document_id = ?", antigoA)).isZero();
 		assertThat(contar("SELECT count(*) FROM document_chunk WHERE client_id = ? AND text LIKE '%Versão antiga%'",
 				CLIENTE_A)).isZero();
-		// Documentos do Cliente B não mudam
 		assertThat(jdbc.queryForList("SELECT id FROM document WHERE client_id = ?", Long.class, CLIENTE_B))
 				.containsExactly(contratoB);
 		assertThat(textosDosChunks(contratoB)).isEqualTo(chunksDeBAntes);

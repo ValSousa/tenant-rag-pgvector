@@ -66,7 +66,6 @@ class ChunkRepositoryIT extends AbstractIntegrationTest {
 				List.of(fakeEmbeddings.fixo("franquia"), fakeEmbeddings.fixo("vidros"),
 						fakeEmbeddings.fixo("assistencia")));
 		String pergunta = "Qual é o valor da franquia da apólice?";
-		// Mais perto de "franquia", depois "vidros", depois "assistencia": ordem esperada estrita
 		fakeEmbeddings.registrar(pergunta, combinar(Map.of("franquia", 0.9f, "vidros", 0.4f, "assistencia", 0.1f)));
 
 		String resposta = mvc.perform(post("/clients/{clientId}/search", cliente.getId())
@@ -106,7 +105,6 @@ class ChunkRepositoryIT extends AbstractIntegrationTest {
 		assertThat(encontrados).allSatisfy(match -> assertThat(match.score()).isBetween(0.0, 1.0));
 	}
 
-	/** Soma ponderada dos vetores fixos dos rótulos. */
 	private Embedding combinar(Map<String, Float> pesos) {
 		float[] vetor = new float[fakeEmbeddings.dimension()];
 		pesos.forEach((rotulo, peso) -> {

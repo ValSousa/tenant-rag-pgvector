@@ -114,5 +114,5 @@ Alta — Faz parte da primeira entrega (pergunta e resposta por cliente): o usu�
 
 ## Status
 
-- Status: Em andamento — card HU-008 Concluído em 2026-10-05 (testes automáticos e manuais OK, revisão aprovada); entra na release v0.1.0 (Planejada).
+- Status: Concluído — entregue na v0.1.0 (Produção, 2026-10-06).
 - Prontidão: pronto para desenvolvimento; todas as decisões tomadas (ADR-005, ADR-006, ADR-011; DP-06 em 2026-10-02: entra na primeira entrega). No plano, é a Etapa 7, depois do RF-007.
